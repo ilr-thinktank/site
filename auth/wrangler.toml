@@ -1,0 +1,10 @@
+name = "ilr-cms-auth"
+main = "src/index.js"
+compatibility_date = "2026-10-12"
+workers_dev = true
+
+[vars]
+ALLOWED_DOMAINS = "raison-institut.fr,www.raison-institut.fr"
+
+# Add GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET using wrangler secret put.
+# Never put OAuth secrets in this file or the public CMS configuration.
