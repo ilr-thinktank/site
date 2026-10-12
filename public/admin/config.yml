@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms@0.235.1/schema/sveltia-cms.json
+backend:
+  name: github
+  repo: ilr-thinktank/site
+  branch: main
+  auth_methods: [token]
+  # Add OAuth base_url and auth_methods: [oauth] for a one-click login later.
+site_url: https://raison-institut.fr
+display_url: https://raison-institut.fr
+locale: fr
+media_folder: public/media
+public_folder: /media
+collections:
+  - name: articles
+    label: Publications
+    label_singular: Publication
+    folder: content/articles
+    create: true
+    slug: '{{slug}}'
+    preview_path: '{{slug}}/'
+    summary: '{{title}} — {{author}}'
+    fields:
+      - {label: Titre, name: title, widget: string}
+      - {label: "Adresse URL (minuscules et tirets, ne pas modifier après publication)", name: slug, widget: string, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Minuscules, chiffres et tirets uniquement']}
+      - {label: Date de publication, name: date, widget: datetime, type: date, format: YYYY-MM-DD}
+      - {label: Auteur, name: author, widget: string}
+      - {label: Fonction de l’auteur, name: authorRole, widget: string, required: false}
+      - {label: Catégorie, name: category, widget: select, options: [Vidéo, Tribune, Essai court, Podcast, Analyse de fond], default: Essai court}
+      - {label: Résumé, name: description, widget: text, required: false}
+      - {label: Image de couverture, name: image, widget: image, required: false}
+      - {label: Document PDF, name: pdf, widget: file, required: false}
+      - {label: Brouillon (non visible sur le site), name: draft, widget: boolean, default: true}
+      - {label: Texte, name: body, widget: markdown}
+  - name: events
+    label: Événements
+    label_singular: Événement
+    folder: content/events
+    create: true
+    slug: '{{slug}}'
+    preview_path: 'evenements/{{slug}}/'
+    fields:
+      - {label: Titre, name: title, widget: string}
+      - {label: Adresse URL, name: slug, widget: string, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Minuscules, chiffres et tirets uniquement']}
+      - {label: Date et heure (fuseau inclus), name: date, widget: datetime, format: YYYY-MM-DDTHH:mm:ssZ}
+      - {label: Lieu, name: location, widget: string, required: false}
+      - {label: Catégorie, name: category, widget: select, options: [Conférence, Audience, Commission de travail], default: Conférence}
+      - {label: Résumé, name: description, widget: text, required: false}
+      - {label: Image, name: image, widget: image, required: false}
+      - {label: Document PDF, name: pdf, widget: file, required: false}
+      - {label: Lien d’inscription HTTPS, name: registrationUrl, widget: string, required: false}
+      - {label: Brouillon (non visible sur le site), name: draft, widget: boolean, default: true}
+      - {label: Description complète, name: body, widget: markdown}
+  - name: settings
+    label: Pages du site
+    files:
+      - name: home
+        label: Accueil
+        file: content/settings/home.yml
+        fields:
+          - {label: Titre principal, name: title, widget: string}
+          - {label: Titre de présentation, name: introTitle, widget: string}
+          - {label: Texte de présentation, name: introBody, widget: markdown}

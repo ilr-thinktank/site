@@ -1,0 +1,16 @@
+---
+import { getCollection } from 'astro:content';
+import { published, validateSlugs, renderPage, renderEntry, routes } from '../lib/site.mjs';
+export async function getStaticPaths() {
+  const articles = published(await getCollection('articles'));
+  const events = published(await getCollection('events'));
+  validateSlugs(articles, events);
+  return [
+    ...routes.map(slug => ({ params: { slug }, props: { html: renderPage(slug, articles, events) } })),
+    ...articles.map(entry => ({ params: { slug: entry.data.slug }, props: { html: renderEntry(entry) } })),
+    ...events.map(entry => ({ params: { slug: `evenements/${entry.data.slug}` }, props: { html: renderEntry(entry) } })),
+  ];
+}
+const { html } = Astro.props;
+---
+<Fragment set:html={html} />
