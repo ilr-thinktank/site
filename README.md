@@ -13,17 +13,15 @@ The workflow builds and validates the site before deploying `dist/`. Each CMS sa
 
 The original root HTML/assets are retained temporarily so the existing branch-based deployment is not broken before the Pages source is switched. They are a legacy snapshot, **not editable source for the Astro site**. Do not edit them; remove them after the Actions deployment is verified. Only `dist/` is deployed by the new workflow.
 
-## Editor login (initial setup)
+## Editor login
 
-The dashboard currently uses Sveltia's **Sign In with Token**, not an unconfigured OAuth button.
+Open `https://raison-institut.fr/admin/`, choose **Sign In with GitHub**, and approve the Institut La Raison CMS app. Editors need a GitHub account with write access to `ilr-thinktank/site`; no manually created token is required for OAuth sign-in.
 
-- Editors need a GitHub account with write access to `ilr-thinktank/site`.
-- Create a **fine-grained personal access token**, limited to this repository, with **Contents: Read and write**. Metadata read is automatic. Set an expiration.
-- Enter it only in the CMS login prompt on your HTTPS domain. **Never commit it or send it in chat.**
-- Sveltia stores this token in that browser's local storage. Use a trusted computer; sign out after using a shared device. Revoke the token if compromised.
-- This simple publishing workflow does not require Pull requests or Workflows permissions.
+The authentication service runs at `https://ilr-cms-auth.ilr-site.workers.dev`. Its credentials are stored only in Cloudflare Worker secrets. The allowlist restricts token delivery to the website's HTTPS domains. The OAuth grant uses `public_repo`, not the broader scope for private repositories; GitHub OAuth grants cover an account's public repositories rather than just this repository.
 
-For easier nontechnical team login, deploy [Sveltia CMS Authenticator](https://github.com/sveltia/sveltia-cms-auth) on Cloudflare Workers, register a GitHub OAuth app, set `backend.base_url` in `public/admin/config.yml`, and change `auth_methods` to `[oauth]`. OAuth app secrets belong in Worker secrets, never in this repo. That account-side provisioning is not yet configured.
+Token login remains temporarily available as a fallback until end-to-end browser sign-in is confirmed. If used, create a fine-grained token restricted to `ilr-thinktank/site` with **Contents: Read and write** and an expiration. Never commit or share tokens. Sveltia stores login credentials in browser storage; use a trusted computer and sign out on shared devices.
+
+See [auth/README.md](auth/README.md) for provisioning and maintenance instructions. Browser authorization and a content save/rebuild must still be verified by an editor.
 
 ## Publishing without code
 

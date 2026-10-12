@@ -2,7 +2,7 @@
 
 This is the official [Sveltia CMS Authenticator](https://github.com/sveltia/sveltia-cms-auth), vendored at commit `33674be7ec77c1b771983650d979cae88160e093` under its MIT license. One local hardening change requires HTTPS for the opener before delivering a login token. It runs on Cloudflare Workers, separately from the GitHub Pages website. No domain/DNS migration is required.
 
-**Status: prepared, not deployed.** The live CMS still uses token login until provisioning and testing are completed.
+**Status: deployed and credentials configured.** Worker: `https://ilr-cms-auth.ilr-site.workers.dev`. Approved-domain HTTPS redirects and unrelated-domain rejection have been verified. CMS OAuth is enabled with token fallback; an editor must still confirm browser authorization and a content save/rebuild.
 
 ## 1. Authorize Cloudflare
 

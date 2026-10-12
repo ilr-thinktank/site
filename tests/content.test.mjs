@@ -59,6 +59,9 @@ test('CMS collections match real content folders, safe defaults and media output
  const config=YAML.parse(readFileSync('public/admin/config.yml','utf8'));
  assert.equal(config.backend.repo,'ilr-thinktank/site');
  assert.equal(config.backend.branch,'main');
+ assert.equal(config.backend.base_url,'https://ilr-cms-auth.ilr-site.workers.dev');
+ assert.ok(config.backend.auth_methods.includes('oauth'));
+ assert.equal(config.backend.auth_scope,'public_repo');
  for (const c of config.collections.filter(c=>c.folder)) {
   assert.ok(existsSync(c.folder));
   assert.equal(c.fields.find(f=>f.name==='draft').default,true);

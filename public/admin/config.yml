@@ -3,8 +3,10 @@ backend:
   name: github
   repo: ilr-thinktank/site
   branch: main
-  auth_methods: [token]
-  # Add OAuth base_url and auth_methods: [oauth] for a one-click login later.
+  base_url: https://ilr-cms-auth.ilr-site.workers.dev
+  auth_methods: [oauth, token]
+  auth_scope: public_repo
+  # Keep token login as a fallback until browser OAuth sign-in is confirmed.
 site_url: https://raison-institut.fr
 display_url: https://raison-institut.fr
 locale: fr
