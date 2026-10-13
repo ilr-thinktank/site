@@ -36,7 +36,7 @@ New entries start as **Brouillon**. Turn it off and save/publish when ready. Dra
 
 Article URLs use the slug (`/penser-la-situation/` is retained). Event URLs use `/evenements/<slug>/`. Keep slugs unchanged after publishing to avoid broken shared links. Duplicate/reserved article URLs fail the build. Event details display their date in UTC; the CMS stores a timezone-aware datetime.
 
-The remaining institution, membership and contact page copy is still managed through templates. Drag-and-drop layout editing is not included. Contact remains disabled; membership/payment backends are not implemented. This migration publishes only the existing public article, not the old WordPress drafts.
+The remaining institution, membership and contact page copy is still managed through templates. Drag-and-drop layout editing is not included. Contact uses Formspree (`https://formspree.io/f/mnpjgvdl`) with French submission feedback and a native POST fallback without JavaScript. Manage recipient verification, spam settings and submission limits in the Formspree dashboard; verify delivery with a test message after deployment. Membership/payment backends are not implemented. This migration publishes only the existing public article, not the old WordPress drafts.
 
 ## Developer commands
 

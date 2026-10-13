@@ -69,8 +69,19 @@ test('CMS collections match real content folders, safe defaults and media output
  }
  assert.equal(config.media_folder,'public/media'); assert.equal(config.public_folder,'/media');
 });
-test('contact remains disabled in generated output', () => {
+test('contact posts to Formspree with accessible fields and a native fallback', () => {
  const html=renderPage('contact',[],[]);
- assert.doesNotMatch(html, /<form/);
- assert.match(html,/temporairement indisponible/);
+ const $=load(html);
+ const form=$('[data-contact-form]');
+ assert.equal(form.attr('action'),'https://formspree.io/f/mnpjgvdl');
+ assert.equal(form.attr('method'),'post');
+ for (const name of ['name','email','message']) {
+  const field=form.find(`[name="${name}"]`);
+  assert.ok(field.is('[required]'));
+  assert.equal($(`label[for="${field.attr('id')}"]`).length,1);
+ }
+ assert.equal(form.find('[name="email"]').attr('type'),'email');
+ assert.equal(form.find('[name="_gotcha"]').length,1);
+ assert.equal($('[data-contact-status]').attr('role'),'status');
+ assert.doesNotMatch(html,/temporairement indisponible/);
 });

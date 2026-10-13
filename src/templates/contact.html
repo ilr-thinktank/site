@@ -290,6 +290,7 @@ window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/16
         position: relative !important;
         display: inline !important;
     }
+    .ilr-underline-part::after {
         content: "" !important;
         position: absolute !important;
         left: 0 !important;
@@ -312,6 +313,15 @@ window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/16
         margin: 0 !important;
         padding: 0 !important;
     }
+    .ilr-contact-field label {
+        display: block;
+        padding: 12px 18px 0;
+        color: #0B2C19;
+        font-weight: 600;
+    }
+    .ilr-contact-submit:disabled { opacity: 0.65; cursor: wait !important; }
+    .ilr-contact-submit:focus-visible { outline: 3px solid #14432a; outline-offset: -5px; }
+    .ilr-contact-privacy { font-size: 14px; line-height: 1.5; margin-top: 18px; }
     .ilr-contact-field + .ilr-contact-field {
         border-top: 1px solid #e0e0e0 !important;
     }
@@ -414,7 +424,24 @@ window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/16
 
     <div class="ilr-contact-wrapper">
             <h2 class="ilr-contact-title">Nous contacter</h2>
-            <p style="text-align: center; color: #0B2C19;">Le formulaire de contact est temporairement indisponible. Nous le remettrons en ligne prochainement.</p>
+            <form class="ilr-contact-form" data-contact-form action="https://formspree.io/f/mnpjgvdl" method="post" aria-describedby="contact-privacy">
+                <div class="ilr-contact-field">
+                    <label for="contact-name">Nom *</label>
+                    <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="200" required>
+                </div>
+                <div class="ilr-contact-field">
+                    <label for="contact-email">Adresse e-mail *</label>
+                    <input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+                </div>
+                <div class="ilr-contact-field">
+                    <label for="contact-message">Message *</label>
+                    <textarea id="contact-message" name="message" rows="6" maxlength="10000" required></textarea>
+                </div>
+                <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="display: none;">
+                <button class="ilr-contact-submit" type="submit">Envoyer le message</button>
+            </form>
+            <p id="contact-status" data-contact-status role="status" aria-live="polite" aria-atomic="true"></p>
+            <p id="contact-privacy" class="ilr-contact-privacy">Les champs marqués d’un * sont obligatoires. Vos coordonnées et votre message sont transmis à Formspree pour permettre à l’Institut La Raison de répondre à votre demande. N’envoyez pas d’informations sensibles. Consultez la <a href="https://formspree.io/legal/privacy-policy/" rel="noopener noreferrer" target="_blank">politique de confidentialité de Formspree</a>.</p>
         </div>
 
     </div>
