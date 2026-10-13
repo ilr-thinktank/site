@@ -14,8 +14,8 @@ media_folder: public/media
 public_folder: /media
 collections:
   - name: articles
-    label: Publications
-    label_singular: Publication
+    label: Productions
+    label_singular: Production
     folder: content/articles
     create: true
     slug: '{{slug}}'

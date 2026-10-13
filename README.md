@@ -27,14 +27,14 @@ See [auth/README.md](auth/README.md) for provisioning and maintenance instructio
 
 In `/admin/`:
 
-- **Publications:** edit the existing André Bellon article or create an article with title, author, date, category, cover image, text and optional PDF.
+- **Productions:** edit the existing André Bellon article or create an article with title, author, date, category, cover image, text and optional PDF.
 - **Événements:** create an event with date/time, location, category, description, image, optional PDF and external HTTPS registration link.
 - **Pages du site → Accueil:** edit the homepage title and introduction.
 - **Asset library:** upload images and PDFs; they are stored in `public/media/` and published at `/media/`.
 
 New entries start as **Brouillon**. Turn it off and save/publish when ready. Drafts never get public pages or appear in lists. Future-dated articles are excluded until a build after their date (no automatic scheduled publishing yet); future events can be announced immediately. New content appears automatically in the appropriate listing and homepage section. Search/category filters run locally, without WordPress.
 
-Article URLs use the slug (`/penser-la-situation/` is retained). Event URLs use `/evenements/<slug>/`. Keep slugs unchanged after publishing to avoid broken shared links. Duplicate/reserved article URLs fail the build. Event details display their date in UTC; the CMS stores a timezone-aware datetime.
+The Productions listing is at `/productions/`; `/publications/` redirects there (static HTML redirect on GitHub Pages). Article URLs use the slug (`/penser-la-situation/` is retained). Event URLs use `/evenements/<slug>/`. Keep slugs unchanged after publishing to avoid broken shared links. Duplicate/reserved article URLs fail the build. Event details display their date in UTC; the CMS stores a timezone-aware datetime.
 
 The remaining institution, membership and contact page copy is still managed through templates. Drag-and-drop layout editing is not included. Contact uses Formspree (`https://formspree.io/f/mnpjgvdl`) with French submission feedback and a native POST fallback without JavaScript. Manage recipient verification, spam settings and submission limits in the Formspree dashboard; verify delivery with a test message after deployment. Membership/payment backends are not implemented. This migration publishes only the existing public article, not the old WordPress drafts.
 
@@ -58,11 +58,11 @@ For a GitHub project-path preview, use `SITE_BASE=/site npm run build`. Producti
 
 ## Structure
 
-- `content/articles/*.md`: publications
+- `content/articles/*.md`: productions
 - `content/events/*.md`: events
 - `content/settings/home.yml`: editable homepage copy
 - `src/templates/`: shared header/footer, preserved page shells
-- `src/lib/site.mjs`: rendering, safe Markdown, publication visibility and search markup
+- `src/lib/site.mjs`: rendering, safe Markdown, production visibility and search markup
 - `src/content.config.ts`: validated content schemas
 - `src/pages/`: Astro route generation
 - `public/admin/`: Sveltia dashboard/configuration (version-pinned CDN script)

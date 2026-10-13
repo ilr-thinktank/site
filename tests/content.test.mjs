@@ -10,7 +10,9 @@ test('draft and future articles are excluded; future events can be announced', (
  assert.deepEqual(published([a,draft,future,event],new Date('2026-10-12')), [event,a]);
 });
 test('duplicate/reserved URLs fail loudly instead of overwriting pages', () => {
- assert.throws(() => validateSlugs([entry({slug:'admin'})],[]));
+ for (const slug of ['admin', 'productions', 'publications']) {
+  assert.throws(() => validateSlugs([entry({slug})],[]));
+ }
  assert.throws(() => validateSlugs([entry(),entry()],[]));
  assert.throws(() => validateSlugs([], [entry({},'events'),entry({},'events')]));
 });
@@ -28,6 +30,25 @@ test('new articles use reusable template and update metadata, PDF and image', ()
  assert.equal($('a[href="/media/document.pdf"]').length,1);
  assert.equal($('meta[property="og:image"]').attr('content'),'https://raison-institut.fr/media/photo.png');
 });
+test('Productions terminology, metadata and navigation are consistent', () => {
+ const $ = load(renderPage('productions', [], []));
+ assert.equal($('h1').text().trim(), 'Nos Productions');
+ assert.equal($('link[rel="canonical"]').attr('href'), 'https://raison-institut.fr/productions/');
+ assert.equal($('meta[property="og:url"]').attr('content'), 'https://raison-institut.fr/productions/');
+ assert.match($('title').text(), /Productions/);
+ assert.match($('meta[name="description"]').attr('content'), /productions/);
+ assert.equal($('input[type="search"]').attr('placeholder'), 'Rechercher une production…');
+ assert.equal($('[data-content-empty]').text(), 'Aucune production pour le moment.');
+ for (const html of [renderPage('', [], []), $.html(), renderEntry(entry())]) {
+  const page = load(html);
+  assert.equal(page('a[href="/publications/"]').length, 0);
+  assert.equal(page('.wpr-nav-menu a[href="/productions/"]').text(), 'Productions');
+ }
+ const article = load(renderEntry(entry()));
+ assert.equal(article('.wpr-nav-menu a[href="/productions/"]').attr('aria-current'), 'true');
+ const config = YAML.parse(readFileSync('public/admin/config.yml', 'utf8'));
+ assert.equal(config.collections.find(c => c.name === 'articles').label, 'Productions');
+});
 test('events use separate URLs and include location and registration link', () => {
  const e = entry({slug:'conference-test',location:'Paris',registrationUrl:'https://example.org/inscription'},'events');
  const $ = load(renderEntry(e));
@@ -37,7 +58,7 @@ test('events use separate URLs and include location and registration link', () =
 });
 test('homepage and indexes list new entries automatically, with working filters', () => {
  const a=entry();
- for (const route of ['', 'publications']) {
+ for (const route of ['', 'productions']) {
   const $=load(renderPage(route,[a],[]));
   assert.equal($('[data-content-card]').length,1);
   assert.equal($('[data-content-card] a').first().attr('href'), '/une-nouvelle-publication/');

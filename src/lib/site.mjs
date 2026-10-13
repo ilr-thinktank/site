@@ -4,8 +4,8 @@ import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import YAML from 'yaml';
 
-export const routes = ['linstitut', 'devenir-adherent', 'nos-evenements', 'publications', 'contact'];
-const reserved = new Set([...routes, 'admin', 'evenements', 'media', 'wp-content', 'wp-includes']);
+export const routes = ['linstitut', 'devenir-adherent', 'nos-evenements', 'productions', 'contact'];
+const reserved = new Set([...routes, 'publications', 'admin', 'evenements', 'media', 'wp-content', 'wp-includes']);
 export const base = () => (process.env.SITE_BASE || '/').replace(/\/$/, '');
 export const local = path => `${base()}/${path.replace(/^\//, '')}`;
 export function escape(text) {
@@ -49,7 +49,7 @@ function card(e) {
     ${d.location ? `<p>${escape(d.location)}</p>` : ''}
     <p>${escape(d.description)}</p><a href="${entryUrl(e)}">Consulter →</a></div></article>`;
 }
-export function listing(entries, { search = true, empty = 'Aucune publication pour le moment.', label = 'Rechercher', id = 'content' } = {}) {
+export function listing(entries, { search = true, empty = 'Aucune production pour le moment.', label = 'Rechercher', id = 'content' } = {}) {
   const categories = [...new Set(entries.map(e => e.data.category))];
   return `<div class="ilr-content-list" data-content-list>
     ${search ? `<div class="ilr-search"><label for="${id}-query">${label}</label><input id="${id}-query" type="search" data-content-query placeholder="${label}…"><label for="${id}-category">Catégorie</label><select id="${id}-category" data-content-category><option value="">Toutes les catégories</option>${categories.map(c => `<option>${escape(c)}</option>`).join('')}</select></div>` : ''}
@@ -91,7 +91,7 @@ function finalize($, sourceRoute, { title, description = '', image = '', path, a
     const set = $(el).attr('srcset');
     if (set) $(el).attr('srcset', set.split(',').map(s => { const [u, ...rest] = s.trim().split(/\s+/); return [fix(u), ...rest].join(' '); }).join(', '));
   });
-  const navigationRoute = article ? (article.collection === 'events' ? 'nos-evenements/' : 'publications/') : (sourceRoute ? `${sourceRoute}/` : '');
+  const navigationRoute = article ? (article.collection === 'events' ? 'nos-evenements/' : 'productions/') : (sourceRoute ? `${sourceRoute}/` : '');
   $('.wpr-nav-menu a, .wpr-mobile-nav-menu a').each((_, el) => {
     if ($(el).attr('href') === local(navigationRoute)) $(el).addClass('wpr-active-menu-item').attr('aria-current', article ? 'true' : 'page');
   });
@@ -120,8 +120,8 @@ function finalize($, sourceRoute, { title, description = '', image = '', path, a
 }
 export function renderPage(route, articles, events) {
   const $ = loadTemplate(route || 'home');
-  if (route === 'publications') {
-    $('.elementor-element-b01dcef').html(listing(articles, { label: 'Rechercher une publication', id: 'publications' }));
+  if (route === 'productions') {
+    $('.elementor-element-b01dcef').html(listing(articles, { label: 'Rechercher une production', id: 'productions' }));
     $('.elementor-element-e048bce').remove();
   } else if (route === 'nos-evenements') {
     $('.elementor-element-fa75b21').html(listing(events, { label: 'Rechercher un événement', empty: 'Aucun événement pour le moment.', id: 'events' }));

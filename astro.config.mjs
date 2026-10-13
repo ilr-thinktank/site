@@ -4,4 +4,5 @@ export default defineConfig({
   base: process.env.SITE_BASE || '/',
   output: 'static',
   trailingSlash: 'always',
+  redirects: { '/publications/': '/productions/' },
 });
