@@ -110,6 +110,8 @@ function finalize($, sourceRoute, { title, description = '', image = '', path, a
   if (article) $('head').append(`<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': article.collection === 'events' ? 'Event' : 'Article', name: title, headline: title, description, url: canonical, ...(article.collection === 'events' ? { startDate: article.data.date.toISOString(), location: { '@type': 'Place', name: article.data.location } } : { datePublished: article.data.date.toISOString(), author: { '@type': 'Person', name: article.data.author } }) }).replace(/</g, '\\u003c')}</script>`);
   $('head').append(`<link rel="stylesheet" href="${local('site.css')}">`);
   $('body').append(`<script src="${local('site.js')}" defer></script>`);
+  // Public measurement token, not an API secret. Shared by all public routes.
+  $('body').append(`<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"34a4ac8284674ecabf4ab3c239eca7bb"}'></script>`);
   let html = $.html();
   // Legacy runtime configuration and inline fonts contain document-relative URLs.
   html = html.replace(/(?:\.\.\/|\.\/)+(wp-content|wp-includes)\//g, (_, folder) => local(folder + '/'));

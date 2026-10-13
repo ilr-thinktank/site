@@ -38,6 +38,10 @@ Article URLs use the slug (`/penser-la-situation/` is retained). Event URLs use 
 
 The remaining institution, membership and contact page copy is still managed through templates. Drag-and-drop layout editing is not included. Contact uses Formspree (`https://formspree.io/f/mnpjgvdl`) with French submission feedback and a native POST fallback without JavaScript. Manage recipient verification, spam settings and submission limits in the Formspree dashboard; verify delivery with a test message after deployment. Membership/payment backends are not implemented. This migration publishes only the existing public article, not the old WordPress drafts.
 
+## Analytics
+
+All public pages include the Cloudflare Web Analytics beacon through `src/lib/site.mjs`. The CMS dashboard is not tracked. The measurement token is public, not a Cloudflare API credential. View traffic in the Cloudflare Web Analytics dashboard; data may take a few minutes to appear and ad blockers may prevent collection. Include this use of analytics in the site's privacy notice.
+
 ## Developer commands
 
 Requires Node 24+ (CI uses Node 24).

@@ -69,6 +69,15 @@ test('CMS collections match real content folders, safe defaults and media output
  }
  assert.equal(config.media_folder,'public/media'); assert.equal(config.public_folder,'/media');
 });
+test('Cloudflare analytics is included once on public pages and entries', () => {
+ for (const html of [renderPage('',[],[]), renderPage('contact',[],[]), renderEntry(entry()), renderEntry(entry({},'events'))]) {
+  const $=load(html);
+  const beacon=$('script[src="https://static.cloudflareinsights.com/beacon.min.js"]');
+  assert.equal(beacon.length,1);
+  assert.equal(beacon.attr('type'),'module');
+  assert.equal(JSON.parse(beacon.attr('data-cf-beacon')).token,'34a4ac8284674ecabf4ab3c239eca7bb');
+ }
+});
 test('contact posts to Formspree with accessible fields and a native fallback', () => {
  const html=renderPage('contact',[],[]);
  const $=load(html);
