@@ -67,6 +67,22 @@ test('homepage and indexes list new entries automatically, with working filters'
  assert.match($('[data-content-empty]').text(), /Aucun événement/);
  assert.equal($('form').length,0);
 });
+test('shared logo sources resolve from the site root on every page', () => {
+ for (const siteBase of ['', '/site']) {
+  process.env.SITE_BASE = siteBase;
+  try {
+   for (const html of [renderPage('', [], []), ...['linstitut', 'devenir-adherent', 'nos-evenements', 'productions', 'contact'].map(route => renderPage(route, [], [])), renderEntry(entry()), renderEntry(entry({}, 'events'))]) {
+    const $ = load(html);
+    const expected = `${siteBase}/wp-content/uploads/2025/09/4-e1757158223140.png`;
+    assert.equal($('.wpr-logo-image img').attr('src'), expected);
+    const sources = $('.wpr-logo-image source');
+    assert.equal(sources.length, 2);
+    assert.equal(sources.first().attr('srcset'), expected);
+    assert.equal(sources.last().attr('srcset'), `${expected} 1x, ${expected} 2x`);
+   }
+  } finally { delete process.env.SITE_BASE; }
+ }
+});
 test('subdirectory hosting keeps assets and links under the configured base', () => {
  process.env.SITE_BASE='/site';
  try {

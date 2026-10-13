@@ -75,7 +75,11 @@ function finalize($, sourceRoute, { title, description = '', image = '', path, a
       if (v && !/^(?:[a-z]+:|\/|#)/i.test(v)) $(el).attr(attr, '/' + v.replace(/^(?:\.\.\/|\.\/)+/, ''));
     }
     const set = $(el).attr('srcset');
-    if (set) $(el).attr('srcset', set.replace(/(?:\.\.\/|\.\/)+/g, '/'));
+    if (set) $(el).attr('srcset', set.split(',').map(candidate => {
+      const [url, ...descriptors] = candidate.trim().split(/\s+/);
+      const rooted = /^(?:[a-z]+:|\/|#)/i.test(url) ? url : '/' + url.replace(/^(?:\.\.\/|\.\/)+/, '');
+      return [rooted, ...descriptors].join(' ');
+    }).join(', '));
   });
   const fix = value => {
     if (!value || /^(?:#|mailto:|tel:|data:|javascript:)/i.test(value)) return value;
