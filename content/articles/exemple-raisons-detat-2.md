@@ -1,11 +1,14 @@
 ---
-title: Consectetur adipiscing elit (Raisons d’État 2)
+title: "Défense : quelle autonomie stratégique ?"
 slug: exemple-raisons-detat-2
 date: 2026-08-12
-author: Auteur exemple
+author: Autrice D
 rubrique: Raisons d’État
+themes:
+  - Relations internationales
+  - Europe
 category: Essai court
-description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Article de démonstration.
+description: Ce que recouvre la notion d’autonomie stratégique, entre ambitions nationales et coopération européenne.
 draft: false
 ---
 

@@ -1,11 +1,14 @@
 ---
-title: Consectetur adipiscing elit (Audiences 2)
+title: "Entretien : l’Europe et les nations"
 slug: exemple-audiences-2
 date: 2026-10-05
-author: Auteur exemple
+author: Autrice B
 rubrique: Audiences
-category: Essai court
-description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Article de démonstration.
+themes:
+  - Europe
+  - Souveraineté
+category: Vidéo
+description: Un échange sur l’articulation entre construction européenne et souveraineté des États membres.
 draft: false
 ---
 

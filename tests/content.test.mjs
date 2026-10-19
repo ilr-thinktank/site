@@ -68,6 +68,41 @@ test('Productions page shows category icons with one toggle per category', () =>
  assert.equal(card.find('.ilr-card-category svg').length, 1);
  assert.doesNotMatch($('.ilr-content-grid').text(), /Essai court/);
 });
+test('Productions filters link themes, authors and categories, with a matrix', () => {
+ const articles = [
+  entry({ slug: 'a', rubrique: 'Audiences', author: 'Alice', themes: ['Europe', 'Souveraineté'] }),
+  entry({ slug: 'b', rubrique: 'Audiences', author: 'Bob', themes: ['Europe'] }),
+  entry({ slug: 'c', rubrique: 'Angles morts', author: 'Alice', themes: ['Économie'], transcript: [{ time: '01:05', heading: 'Ouverture', text: 'mot-introuvable-ailleurs' }] }),
+ ];
+ const $ = load(renderPage('productions', articles, []));
+ assert.deepEqual($('[data-theme-filter]').map((_, el) => $(el).attr('data-theme-filter')).get(), ['', 'Europe', 'Économie', 'Souveraineté']);
+ assert.deepEqual($('[data-author-filter] option').map((_, el) => $(el).attr('value')).get(), ['', 'Alice', 'Bob']);
+ assert.equal($('[data-matrix-cell][data-theme="Europe"][data-rubrique="Audiences"] span').text(), '2');
+ assert.equal($('[data-matrix-cell][data-theme="Europe"][data-rubrique="Angles morts"]').length, 0);
+ const c = $('[data-content-card]').eq(2);
+ assert.equal(c.attr('data-author'), 'Alice');
+ assert.equal(c.attr('data-themes'), 'Économie');
+ assert.match(c.attr('data-search'), /mot-introuvable-ailleurs/);
+ assert.equal(c.find('.ilr-card-author').attr('href'), '/productions/?auteur=Alice');
+ assert.equal(c.find('.ilr-card-badge').text(), 'Transcription');
+ assert.ok($('[data-content-list]').is('[data-sync-url]'));
+});
+test('articles link back to filtered views and render media with a timed transcript', () => {
+ const transcript = [{ time: '00:00', heading: 'Début', text: 'Bonjour **à tous**' }, { time: '1:02:03', heading: '', text: 'Fin' }];
+ let $ = load(renderEntry(entry({ themes: ['Europe'], media: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', transcript })));
+ assert.equal($('.ilr-author-link').attr('href'), '/productions/?auteur=Auteur');
+ assert.equal($('.ilr-tag').attr('href'), '/productions/?theme=Europe');
+ assert.equal($('.ilr-entry-category').attr('href'), `/productions/?categories=${encodeURIComponent('Audiences')}`);
+ assert.match($('[data-media="youtube"] iframe').attr('src'), /^https:\/\/www\.youtube-nocookie\.com\/embed\/dQw4w9WgXcQ\?enablejsapi=1$/);
+ assert.deepEqual($('[data-seek]').map((_, el) => $(el).attr('data-seek')).get(), ['0', '3723']);
+ assert.match($('.ilr-transcript').html(), /<strong>à tous<\/strong>/);
+ $ = load(renderEntry(entry({ media: '/media/episode.mp3', transcript })));
+ assert.equal($('audio[data-media-element]').attr('src'), '/media/episode.mp3');
+ $ = load(renderEntry(entry({ media: 'javascript:alert(1)', transcript })));
+ assert.equal($('[data-seek]').length, 0);
+ assert.equal($('.ilr-time').length, 2);
+ assert.equal($('iframe, audio, video').length, 0);
+});
 test('homepage showcases the most recent article of each category', () => {
  const a = (slug, rubrique, date) => entry({ slug, rubrique, date: new Date(date) });
  const articles = [a('am-new', 'Angles morts', '2026-05-03'), a('au-new', 'Audiences', '2026-05-02'), a('am-old', 'Angles morts', '2026-05-01'), a('au-old', 'Audiences', '2026-04-01'), a('re', 'Raisons d’État', '2026-03-01')];

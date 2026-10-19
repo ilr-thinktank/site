@@ -1,11 +1,14 @@
 ---
-title: Lorem ipsum dolor sit amet (Bancs d’essai 1)
+title: Le référendum d’initiative citoyenne à l’épreuve
 slug: exemple-bancs-dessai-1
 date: 2026-09-18
-author: Auteur exemple
+author: Autrice D
 rubrique: Bancs d’essai
-category: Tribune
-description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Article de démonstration.
+themes:
+  - Institutions
+  - Démocratie
+category: Analyse de fond
+description: "Une proposition souvent débattue, passée au crible : ce qu’elle permettrait, ce qu’elle changerait, ce qu’elle coûterait."
 draft: false
 ---
 

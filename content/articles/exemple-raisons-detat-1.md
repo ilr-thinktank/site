@@ -1,11 +1,14 @@
 ---
-title: Lorem ipsum dolor sit amet (Raisons d’État 1)
+title: La diplomatie française face aux blocs
 slug: exemple-raisons-detat-1
 date: 2026-08-22
-author: Auteur exemple
+author: Auteur C
 rubrique: Raisons d’État
-category: Tribune
-description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Article de démonstration.
+themes:
+  - Relations internationales
+  - Souveraineté
+category: Essai court
+description: Comment la France peut-elle tenir une voix singulière dans un monde qui se recompose en blocs ?
 draft: false
 ---
 

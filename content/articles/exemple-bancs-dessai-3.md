@@ -1,11 +1,14 @@
 ---
-title: Sed do eiusmod tempor (Bancs d’essai 3)
+title: "Décentralisation : bilan d’étape"
 slug: exemple-bancs-dessai-3
 date: 2026-08-29
-author: Auteur exemple
+author: Autrice B
 rubrique: Bancs d’essai
+themes:
+  - Territoires
+  - Institutions
 category: Analyse de fond
-description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Article de démonstration.
+description: Quarante ans de décentralisation évalués à l’aune de leurs promesses initiales.
 draft: false
 ---
 

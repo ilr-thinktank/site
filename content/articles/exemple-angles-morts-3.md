@@ -1,11 +1,15 @@
 ---
-title: Sed do eiusmod tempor (Angles morts 3)
+title: Le droit européen et la loi nationale
 slug: exemple-angles-morts-3
 date: 2026-07-06
-author: Auteur exemple
+author: Autrice D
 rubrique: Angles morts
-category: Analyse de fond
-description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Article de démonstration.
+themes:
+  - Europe
+  - Institutions
+  - Partis politiques
+category: Tribune
+description: La hiérarchie des normes entre droit européen et loi française, une question rarement posée au grand jour.
 draft: false
 ---
 

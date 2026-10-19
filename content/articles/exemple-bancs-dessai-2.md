@@ -1,11 +1,14 @@
 ---
-title: Consectetur adipiscing elit (Bancs d’essai 2)
+title: La proportionnelle, mode d’emploi
 slug: exemple-bancs-dessai-2
 date: 2026-09-08
-author: Auteur exemple
+author: Auteur A
 rubrique: Bancs d’essai
-category: Essai court
-description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Article de démonstration.
+themes:
+  - Élections
+  - Institutions
+category: Analyse de fond
+description: Les différents modes de scrutin proportionnels comparés, et leurs effets probables sur la vie politique française.
 draft: false
 ---
 

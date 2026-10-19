@@ -1,11 +1,14 @@
 ---
-title: Sed do eiusmod tempor (Audiences 3)
+title: "Entretien : où va le débat public ?"
 slug: exemple-audiences-3
 date: 2026-09-25
-author: Auteur exemple
+author: Auteur C
 rubrique: Audiences
-category: Analyse de fond
-description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Article de démonstration.
+themes:
+  - Démocratie
+  - Société
+category: Vidéo
+description: Une conversation sur la qualité du débat démocratique et sur la manière de le raviver.
 draft: false
 ---
 

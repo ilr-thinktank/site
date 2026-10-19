@@ -6,6 +6,10 @@ author: André Bellon
 authorRole: Ancien Président de la Commission des affaires étrangères de
   l’Assemblée nationale
 rubrique: Raisons d’État
+themes:
+  - Démocratie
+  - Souveraineté
+  - Partis politiques
 category: Essai court
 image: /wp-content/uploads/2025/09/2.png
 description: André Bellon interroge les nomenclatures politiques et la place de

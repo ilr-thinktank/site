@@ -1,11 +1,14 @@
 ---
-title: Lorem ipsum dolor sit amet (Angles morts 1)
+title: Les territoires ultramarins, angle mort du débat
 slug: exemple-angles-morts-1
 date: 2026-07-26
-author: Auteur exemple
+author: Autrice B
 rubrique: Angles morts
+themes:
+  - Territoires
+  - Économie
 category: Tribune
-description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Article de démonstration.
+description: Des territoires essentiels à la France, pourtant presque absents du débat national.
 draft: false
 ---
 

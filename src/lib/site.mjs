@@ -43,8 +43,8 @@ const formatDate = date => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long',
 // Production categories, in display order, with their icons. Keep in sync with the CMS and content schema.
 // The older format field (Essai court, Tribune…) is kept in the content but not displayed for now.
 export const rubriques = [
-  ['Audiences', '<path d="M4 4h11a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M19 8h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v3l-4-3h-4a2 2 0 0 1-1.7-1"/>'],
-  ['Bancs d’essai', '<path d="M9 3h6M10 3v6l-5.5 9.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7 15h10"/>'],
+  ['Audiences', '<circle cx="12" cy="7.5" r="3.5"/><path d="M5 21v-1a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v1"/>'],
+  ['Bancs d’essai', '<path d="M2 15h20M4 15v6M20 15v6M4 19h16"/><path d="M6.5 15a5.5 5.5 0 0 1 11 0"/><path d="M12 15l3-3.5"/>'],
   ['Raisons d’État', '<path d="M3 9l9-6 9 6z"/><path d="M5 9v9M9.5 9v9M14.5 9v9M19 9v9M3 21h18M4 18h16"/>'],
   ['Angles morts', '<path d="M2 12s3.5-7 10-7c2 0 3.7.6 5.1 1.5M22 12s-3.5 7-10 7c-2 0-3.7-.6-5.1-1.5"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/>'],
 ];
@@ -52,27 +52,88 @@ const icon = name => {
   const paths = rubriques.find(([n]) => n === name)?.[1];
   return paths ? `<svg class="ilr-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>` : '';
 };
+// Links into the Productions page with filters preset (shareable URLs read by site.js).
+export const productionsUrl = (param, value) => `${local('productions/')}?${param}=${encodeURIComponent(value)}`;
+const themesOf = d => d.themes ?? [];
 function card(e) {
   const d = e.data;
   const label = d.rubrique || d.category;
-  return `<article class="ilr-content-card" data-content-card data-category="${escape(d.category)}"${d.rubrique ? ` data-rubrique="${escape(d.rubrique)}"` : ''}>
+  // Hidden from view but searchable: themes and transcript text.
+  const searchExtra = [...themesOf(d), ...(d.transcript ?? []).flatMap(s => [s.heading, s.text])].join(' ');
+  const attrs = d.rubrique ? ` data-rubrique="${escape(d.rubrique)}" data-themes="${escape(themesOf(d).join('|'))}" data-author="${escape(d.author)}" data-search="${escape(searchExtra)}"` : '';
+  const author = d.author ? (d.rubrique ? ` · <a class="ilr-card-author" href="${productionsUrl('auteur', d.author)}">${escape(d.author)}</a>` : ` · ${escape(d.author)}`) : '';
+  return `<article class="ilr-content-card" data-content-card data-category="${escape(d.category)}"${attrs}>
     ${d.image ? `<a href="${entryUrl(e)}" tabindex="-1" aria-hidden="true"><img src="${escape(d.image)}" alt="" loading="lazy"></a>` : ''}
-    <div class="ilr-card-copy"><p class="ilr-card-category">${icon(d.rubrique)}<span>${escape(label)}</span></p>
+    <div class="ilr-card-copy"><p class="ilr-card-category">${icon(d.rubrique)}<span>${escape(label)}</span>${d.transcript?.length ? '<span class="ilr-card-badge">Transcription</span>' : ''}</p>
     <h2><a href="${entryUrl(e)}">${escape(d.title)}</a></h2>
-    <p><time datetime="${d.date.toISOString()}">${formatDate(d.date)}</time>${d.author ? ` · ${escape(d.author)}` : ''}</p>
+    <p><time datetime="${d.date.toISOString()}">${formatDate(d.date)}</time>${author}</p>
     ${d.location ? `<p>${escape(d.location)}</p>` : ''}
-    <p>${escape(d.description)}</p><a href="${entryUrl(e)}">Consulter →</a></div></article>`;
+    <p>${escape(d.description)}</p>
+    ${themesOf(d).length ? `<p class="ilr-card-themes">${themesOf(d).map(escape).join(' · ')}</p>` : ''}
+    <a href="${entryUrl(e)}">Consulter →</a></div></article>`;
+}
+const countBy = (items, key) => {
+  const counts = new Map();
+  for (const item of items) for (const k of [key(item)].flat()) if (k) counts.set(k, (counts.get(k) ?? 0) + 1);
+  return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'fr'));
+};
+// Productions page: search, category toggles, theme chips, author filter and a Thèmes × Catégories bubble matrix.
+// All filters combine; site.js keeps them in the URL so a filtered view can be shared.
+export function productionsListing(articles, { label = 'Rechercher une production', id = 'productions' } = {}) {
+  const themes = countBy(articles, e => themesOf(e.data));
+  const authors = countBy(articles, e => e.data.author).sort((a, b) => a[0].localeCompare(b[0], 'fr'));
+  const cell = (theme, name) => articles.filter(e => e.data.rubrique === name && themesOf(e.data).includes(theme)).length;
+  const max = Math.max(1, ...themes.flatMap(([theme]) => rubriques.map(([name]) => cell(theme, name))));
+  const matrix = themes.length ? `<details class="ilr-explorer" open><summary>Explorer : thèmes × catégories</summary>
+    <table class="ilr-matrix"><caption>Nombre de productions par thème et par catégorie. Cliquez sur une bulle pour filtrer.</caption>
+    <thead><tr><th scope="col">Thème</th>${rubriques.map(([name]) => `<th scope="col" title="${escape(name)}">${icon(name)}<span class="ilr-sr">${escape(name)}</span></th>`).join('')}</tr></thead>
+    <tbody>${themes.map(([theme]) => `<tr><th scope="row">${escape(theme)}</th>${rubriques.map(([name]) => {
+      const n = cell(theme, name);
+      return `<td>${n ? `<button type="button" class="ilr-bubble" data-matrix-cell data-theme="${escape(theme)}" data-rubrique="${escape(name)}" style="--s:${(0.35 + 0.65 * n / max).toFixed(2)}" aria-label="${escape(theme)} × ${escape(name)} : ${n} production${n > 1 ? 's' : ''}"><span>${n}</span></button>` : '<span class="ilr-bubble-empty" aria-hidden="true"></span>'}</td>`;
+    }).join('')}</tr>`).join('')}</tbody></table></details>` : '';
+  return `<div class="ilr-content-list" data-content-list data-sync-url>
+    <div class="ilr-search"><label for="${id}-query">${label}</label><input id="${id}-query" type="search" data-content-query placeholder="${label}…">
+    <div class="ilr-toggles" role="group" aria-label="Afficher ou masquer les catégories">${rubriques.map(([name]) => `<button type="button" class="ilr-toggle" data-rubrique-toggle="${escape(name)}" aria-pressed="true" title="Afficher ou masquer : ${escape(name)}">${icon(name)}<span>${escape(name)}</span><small>${articles.filter(e => e.data.rubrique === name).length}</small></button>`).join('')}</div>
+    ${themes.length ? `<div class="ilr-chips" role="group" aria-label="Filtrer par thème"><button type="button" class="ilr-chip" data-theme-filter="" aria-pressed="true">Tous les thèmes</button>${themes.map(([theme, n]) => `<button type="button" class="ilr-chip" data-theme-filter="${escape(theme)}" aria-pressed="false">${escape(theme)} <small>${n}</small></button>`).join('')}</div>` : ''}
+    <div class="ilr-filter-row"><label for="${id}-author">Auteur</label><select id="${id}-author" data-author-filter><option value="">Tous les auteurs</option>${authors.map(([a, n]) => `<option value="${escape(a)}">${escape(a)} (${n})</option>`).join('')}</select>
+    <p class="ilr-status" data-content-status aria-live="polite">${articles.length} production${articles.length > 1 ? 's' : ''}</p><button type="button" class="ilr-reset" data-filter-reset hidden>Réinitialiser les filtres</button></div></div>
+    ${matrix}
+    <div class="ilr-content-grid">${articles.map(card).join('')}</div>
+    <p data-content-empty ${articles.length ? 'hidden' : ''}>Aucune production pour le moment.</p></div>`;
+}
+const toSeconds = time => time.split(':').reduce((total, part) => total * 60 + Number(part), 0);
+// Embeds a YouTube/Vimeo link or an audio/video file. Anything else is ignored.
+export function mediaEmbed(url) {
+  if (!url) return '';
+  let u;
+  try { u = new URL(url, 'https://raison-institut.fr'); } catch { return ''; }
+  if (u.protocol !== 'https:') return '';
+  const host = u.hostname.replace(/^(?:www|m)\./, '');
+  const youtube = host === 'youtu.be' ? u.pathname.slice(1) : host === 'youtube.com' ? (u.searchParams.get('v') ?? u.pathname.match(/^\/(?:embed|shorts|live)\/([\w-]+)/)?.[1]) : null;
+  if (youtube && /^[\w-]{11}$/.test(youtube)) return `<div class="ilr-media" data-media="youtube"><iframe src="https://www.youtube-nocookie.com/embed/${youtube}?enablejsapi=1" title="Lecteur vidéo" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>`;
+  const vimeo = host === 'vimeo.com' && u.pathname.match(/^\/(\d+)/)?.[1];
+  if (vimeo) return `<div class="ilr-media" data-media="vimeo"><iframe src="https://player.vimeo.com/video/${vimeo}" title="Lecteur vidéo" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+  const src = escape(u.hostname === 'raison-institut.fr' ? local(u.pathname) : u.href);
+  if (/\.(?:mp3|m4a|ogg|oga|wav)$/i.test(u.pathname)) return `<audio class="ilr-audio" controls preload="metadata" src="${src}" data-media-element></audio>`;
+  if (/\.(?:mp4|webm)$/i.test(u.pathname)) return `<div class="ilr-media"><video controls preload="metadata" src="${src}" data-media-element></video></div>`;
+  return '';
+}
+// Edited transcript with timestamps and headings; timestamps seek the player when there is one.
+export function transcriptHtml(transcript, playable) {
+  if (!transcript?.length) return '';
+  return `<section class="ilr-transcript" aria-labelledby="transcription"><h2 id="transcription">Transcription</h2>
+    ${transcript.map(s => {
+      const seconds = toSeconds(s.time);
+      const time = playable ? `<button type="button" class="ilr-time" data-seek="${seconds}" aria-label="Lire à partir de ${escape(s.time)}">${escape(s.time)}</button>` : `<span class="ilr-time">${escape(s.time)}</span>`;
+      return `<div class="ilr-segment" id="t-${seconds}">${s.heading ? `<h3>${escape(s.heading)}</h3>` : ''}<div class="ilr-segment-body">${time}<div>${markdown(s.text)}</div></div></div>`;
+    }).join('')}</section>`;
 }
 // Homepage showcase: the most recent article of each category, in category order (articles are sorted newest first).
 export const latestByRubrique = articles => rubriques.map(([name]) => articles.find(e => e.data.rubrique === name)).filter(Boolean);
-// With `toggles`, category icon buttons replace the category dropdown (Productions page).
-export function listing(entries, { search = true, toggles = false, empty = 'Aucune production pour le moment.', label = 'Rechercher', id = 'content' } = {}) {
+export function listing(entries, { search = true, empty = 'Aucune production pour le moment.', label = 'Rechercher', id = 'content' } = {}) {
   const categories = [...new Set(entries.map(e => e.data.category))];
-  const filter = toggles
-    ? `<div class="ilr-toggles" role="group" aria-label="Afficher ou masquer les catégories">${rubriques.map(([name]) => `<button type="button" class="ilr-toggle" data-rubrique-toggle="${escape(name)}" aria-pressed="true" title="Afficher ou masquer : ${escape(name)}">${icon(name)}<span>${escape(name)}</span><small>${entries.filter(e => e.data.rubrique === name).length}</small></button>`).join('')}</div>`
-    : `<label for="${id}-category">Catégorie</label><select id="${id}-category" data-content-category><option value="">Toutes les catégories</option>${categories.map(c => `<option>${escape(c)}</option>`).join('')}</select>`;
   return `<div class="ilr-content-list" data-content-list>
-    ${search ? `<div class="ilr-search"><label for="${id}-query">${label}</label><input id="${id}-query" type="search" data-content-query placeholder="${label}…">${filter}</div>` : ''}
+    ${search ? `<div class="ilr-search"><label for="${id}-query">${label}</label><input id="${id}-query" type="search" data-content-query placeholder="${label}…"><label for="${id}-category">Catégorie</label><select id="${id}-category" data-content-category><option value="">Toutes les catégories</option>${categories.map(c => `<option>${escape(c)}</option>`).join('')}</select></div>` : ''}
     <div class="ilr-content-grid">${entries.map(card).join('')}</div>
     <p data-content-empty ${entries.length ? 'hidden' : ''}>${escape(empty)}</p></div>`;
 }
@@ -147,7 +208,7 @@ function finalize($, sourceRoute, { title, description = '', image = '', path, a
 export function renderPage(route, articles, events) {
   const $ = loadTemplate(route || 'home');
   if (route === 'productions') {
-    $('.elementor-element-b01dcef').html(listing(articles, { toggles: true, label: 'Rechercher une production', id: 'productions' }));
+    $('.elementor-element-b01dcef').html(productionsListing(articles));
     $('.elementor-element-e048bce').remove();
   } else if (route === 'nos-evenements') {
     $('.elementor-element-fa75b21').html(listing(events, { label: 'Rechercher un événement', empty: 'Aucun événement pour le moment.', id: 'events' }));
@@ -172,9 +233,12 @@ export function renderEntry(e) {
   $('.elementor-element-b7a433b .elementor-heading-title').text(d.title);
   const byline = e.collection === 'events'
     ? `<p><time datetime="${d.date.toISOString()}">${formatDate(d.date)}</time>${d.location ? `<br>${escape(d.location)}` : ''}</p>`
-    : `<p>par <strong>${escape(d.author)}</strong>${d.authorRole ? `<br><em>${escape(d.authorRole)}</em>` : ''}</p>`;
+    : `<p>par <strong><a class="ilr-author-link" href="${productionsUrl('auteur', d.author)}" title="Toutes les productions de cet auteur">${escape(d.author)}</a></strong>${d.authorRole ? `<br><em>${escape(d.authorRole)}</em>` : ''}</p>`
+      + (d.rubrique ? `<p class="ilr-entry-tags"><a class="ilr-entry-category" href="${productionsUrl('categories', d.rubrique)}">${icon(d.rubrique)}<span>${escape(d.rubrique)}</span></a>${themesOf(d).map(t => `<a class="ilr-tag" href="${productionsUrl('theme', t)}">${escape(t)}</a>`).join('')}</p>` : '');
   $('.elementor-element-da02cea').html(byline);
-  $('.elementor-element-f36b3cf').html(markdown(e.body)
+  const player = e.collection === 'articles' ? mediaEmbed(d.media) : '';
+  $('.elementor-element-f36b3cf').html(player + markdown(e.body)
+    + (e.collection === 'articles' ? transcriptHtml(d.transcript, Boolean(player)) : '')
     + (d.pdf ? `<p><a href="${escape(d.pdf)}">Télécharger le PDF</a></p>` : '')
     + (d.registrationUrl ? `<p><a href="${escape(d.registrationUrl)}" rel="noopener noreferrer">S’inscrire</a></p>` : ''));
   return finalize($, 'penser-la-situation', { title: d.title, description: d.description, image: d.image, path: `${e.collection === 'events' ? 'evenements/' : ''}${d.slug}/`, article: e });

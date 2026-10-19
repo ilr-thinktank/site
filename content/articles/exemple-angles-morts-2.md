@@ -1,11 +1,14 @@
 ---
-title: Consectetur adipiscing elit (Angles morts 2)
+title: L’abstention, premier parti de France
 slug: exemple-angles-morts-2
 date: 2026-07-16
-author: Auteur exemple
+author: Auteur C
 rubrique: Angles morts
-category: Essai court
-description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Article de démonstration.
+themes:
+  - Élections
+  - Démocratie
+category: Tribune
+description: Ce que l’abstention dit de notre démocratie, et pourquoi on en parle si peu entre deux élections.
 draft: false
 ---
 

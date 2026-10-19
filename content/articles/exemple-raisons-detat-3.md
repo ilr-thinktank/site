@@ -1,11 +1,14 @@
 ---
-title: Sed do eiusmod tempor (Raisons d’État 3)
+title: L’État stratège et l’industrie
 slug: exemple-raisons-detat-3
 date: 2026-08-02
-author: Auteur exemple
+author: Auteur A
 rubrique: Raisons d’État
-category: Analyse de fond
-description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Article de démonstration.
+themes:
+  - Économie
+  - Souveraineté
+category: Essai court
+description: Retour sur le rôle de l’État dans la politique industrielle, hier et aujourd’hui.
 draft: false
 ---
 
