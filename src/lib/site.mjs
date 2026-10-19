@@ -39,39 +39,39 @@ export function entryUrl(e) {
   return local(`${e.collection === 'events' ? 'evenements/' : ''}${e.data.slug}/`);
 }
 const formatDate = date => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeZone: 'UTC' }).format(date);
+// Production categories, in display order, with their icons. Keep in sync with the CMS and content schema.
+// The older format field (Essai court, Tribune…) is kept in the content but not displayed for now.
+export const rubriques = [
+  ['Audiences', '<path d="M4 4h11a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M19 8h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v3l-4-3h-4a2 2 0 0 1-1.7-1"/>'],
+  ['Bancs d’essai', '<path d="M9 3h6M10 3v6l-5.5 9.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7 15h10"/>'],
+  ['Raisons d’État', '<path d="M3 9l9-6 9 6z"/><path d="M5 9v9M9.5 9v9M14.5 9v9M19 9v9M3 21h18M4 18h16"/>'],
+  ['Angles morts', '<path d="M2 12s3.5-7 10-7c2 0 3.7.6 5.1 1.5M22 12s-3.5 7-10 7c-2 0-3.7-.6-5.1-1.5"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/>'],
+];
+const icon = name => {
+  const paths = rubriques.find(([n]) => n === name)?.[1];
+  return paths ? `<svg class="ilr-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>` : '';
+};
 function card(e) {
   const d = e.data;
-  return `<article class="ilr-content-card" data-content-card data-category="${escape(d.category)}">
+  const label = d.rubrique || d.category;
+  return `<article class="ilr-content-card" data-content-card data-category="${escape(d.category)}"${d.rubrique ? ` data-rubrique="${escape(d.rubrique)}"` : ''}>
     ${d.image ? `<a href="${entryUrl(e)}" tabindex="-1" aria-hidden="true"><img src="${escape(d.image)}" alt="" loading="lazy"></a>` : ''}
-    <div class="ilr-card-copy"><p class="ilr-card-category">${escape(d.category)}</p>
+    <div class="ilr-card-copy"><p class="ilr-card-category">${icon(d.rubrique)}<span>${escape(label)}</span></p>
     <h2><a href="${entryUrl(e)}">${escape(d.title)}</a></h2>
     <p><time datetime="${d.date.toISOString()}">${formatDate(d.date)}</time>${d.author ? ` · ${escape(d.author)}` : ''}</p>
     ${d.location ? `<p>${escape(d.location)}</p>` : ''}
     <p>${escape(d.description)}</p><a href="${entryUrl(e)}">Consulter →</a></div></article>`;
 }
-export function listing(entries, { search = true, empty = 'Aucune production pour le moment.', label = 'Rechercher', id = 'content' } = {}) {
+// With `toggles`, category icon buttons replace the category dropdown (Productions page).
+export function listing(entries, { search = true, toggles = false, empty = 'Aucune production pour le moment.', label = 'Rechercher', id = 'content' } = {}) {
   const categories = [...new Set(entries.map(e => e.data.category))];
+  const filter = toggles
+    ? `<div class="ilr-toggles" role="group" aria-label="Afficher ou masquer les catégories">${rubriques.map(([name]) => `<button type="button" class="ilr-toggle" data-rubrique-toggle="${escape(name)}" aria-pressed="true" title="Afficher ou masquer : ${escape(name)}">${icon(name)}<span>${escape(name)}</span><small>${entries.filter(e => e.data.rubrique === name).length}</small></button>`).join('')}</div>`
+    : `<label for="${id}-category">Catégorie</label><select id="${id}-category" data-content-category><option value="">Toutes les catégories</option>${categories.map(c => `<option>${escape(c)}</option>`).join('')}</select>`;
   return `<div class="ilr-content-list" data-content-list>
-    ${search ? `<div class="ilr-search"><label for="${id}-query">${label}</label><input id="${id}-query" type="search" data-content-query placeholder="${label}…"><label for="${id}-category">Catégorie</label><select id="${id}-category" data-content-category><option value="">Toutes les catégories</option>${categories.map(c => `<option>${escape(c)}</option>`).join('')}</select></div>` : ''}
+    ${search ? `<div class="ilr-search"><label for="${id}-query">${label}</label><input id="${id}-query" type="search" data-content-query placeholder="${label}…">${filter}</div>` : ''}
     <div class="ilr-content-grid">${entries.map(card).join('')}</div>
     <p data-content-empty ${entries.length ? 'hidden' : ''}>${escape(empty)}</p></div>`;
-}
-// Productions page sections, in display order. Keep in sync with the CMS and content schema.
-export const rubriques = [
-  ['audiences', 'Audiences'], ['bancs-dessai', 'Bancs d’essai'],
-  ['raisons-detat', 'Raisons d’État'], ['angles-morts', 'Angles morts'],
-];
-export function rubriqueListing(entries, { label = 'Rechercher', id = 'content' } = {}) {
-  const categories = [...new Set(entries.map(e => e.data.category))];
-  const sections = rubriques.map(([anchor, name]) => {
-    const items = entries.filter(e => e.data.rubrique === name);
-    return `<section class="ilr-rubrique" id="${anchor}" data-content-section><h2 class="ilr-rubrique-title">${escape(name)}</h2>
-    ${items.length ? `<div class="ilr-content-grid">${items.map(card).join('')}</div>` : '<p class="ilr-rubrique-empty">Aucune production dans cette rubrique pour le moment.</p>'}</section>`;
-  });
-  return `<div class="ilr-content-list" data-content-list>
-    <div class="ilr-search"><label for="${id}-query">${label}</label><input id="${id}-query" type="search" data-content-query placeholder="${label}…"><label for="${id}-category">Catégorie</label><select id="${id}-category" data-content-category><option value="">Toutes les catégories</option>${categories.map(c => `<option>${escape(c)}</option>`).join('')}</select></div>
-    ${sections.join('')}
-    <p data-content-empty hidden>Aucune production pour le moment.</p></div>`;
 }
 function loadTemplate(name) {
   let html = readFileSync(`src/templates/${name}.html`, 'utf8');
@@ -142,7 +142,7 @@ function finalize($, sourceRoute, { title, description = '', image = '', path, a
 export function renderPage(route, articles, events) {
   const $ = loadTemplate(route || 'home');
   if (route === 'productions') {
-    $('.elementor-element-b01dcef').html(rubriqueListing(articles, { label: 'Rechercher une production', id: 'productions' }));
+    $('.elementor-element-b01dcef').html(listing(articles, { toggles: true, label: 'Rechercher une production', id: 'productions' }));
     $('.elementor-element-e048bce').remove();
   } else if (route === 'nos-evenements') {
     $('.elementor-element-fa75b21').html(listing(events, { label: 'Rechercher un événement', empty: 'Aucun événement pour le moment.', id: 'events' }));

@@ -49,18 +49,24 @@ test('Productions terminology, metadata and navigation are consistent', () => {
  const config = YAML.parse(readFileSync('public/admin/config.yml', 'utf8'));
  assert.equal(config.collections.find(c => c.name === 'articles').label, 'Productions');
 });
-test('Productions page groups articles into the four rubriques', () => {
- const names = rubriques.map(([, name]) => name);
+test('Productions page shows category icons with one toggle per category', () => {
+ const names = rubriques.map(([name]) => name);
  assert.deepEqual(names, ['Audiences', 'Bancs d’essai', 'Raisons d’État', 'Angles morts']);
  const config = YAML.parse(readFileSync('public/admin/config.yml', 'utf8'));
- assert.deepEqual(config.collections.find(c => c.name === 'articles').fields.find(f => f.name === 'rubrique').options, names);
+ const fields = config.collections.find(c => c.name === 'articles').fields;
+ assert.deepEqual(fields.find(f => f.name === 'rubrique').options, names);
+ assert.equal(fields.find(f => f.name === 'category').widget, 'hidden');
  assert.match(readFileSync('src/content.config.ts', 'utf8'), new RegExp(`rubrique: z\\.enum\\(\\[${names.map(n => `'${n}'`).join(', ')}\\]\\)`));
- const $ = load(renderPage('productions', [entry({ slug: 'a', rubrique: 'Raisons d’État' }), entry({ slug: 'b', rubrique: 'Angles morts' })], []));
- assert.deepEqual($('.ilr-rubrique-title').map((_, el) => $(el).text()).get(), names);
- assert.equal($('#raisons-detat [data-content-card] a').first().attr('href'), '/a/');
- assert.equal($('#angles-morts [data-content-card] a').first().attr('href'), '/b/');
- assert.equal($('#audiences [data-content-card]').length, 0);
- assert.equal($('#audiences .ilr-rubrique-empty').length, 1);
+ const $ = load(renderPage('productions', [entry({ slug: 'a', rubrique: 'Raisons d’État' }), entry({ slug: 'b', rubrique: 'Raisons d’État' })], []));
+ assert.deepEqual($('[data-rubrique-toggle]').map((_, el) => $(el).attr('data-rubrique-toggle')).get(), names);
+ assert.equal($('[data-rubrique-toggle][aria-pressed="true"]').length, 4);
+ assert.equal($('[data-rubrique-toggle="Raisons d’État"] small').text(), '2');
+ assert.equal($('[data-content-category]').length, 0);
+ const card = $('[data-content-card]').first();
+ assert.equal(card.attr('data-rubrique'), 'Raisons d’État');
+ assert.equal(card.find('.ilr-card-category').text(), 'Raisons d’État');
+ assert.equal(card.find('.ilr-card-category svg').length, 1);
+ assert.doesNotMatch($('.ilr-content-grid').text(), /Essai court/);
 });
 test('events use separate URLs and include location and registration link', () => {
  const e = entry({slug:'conference-test',location:'Paris',registrationUrl:'https://example.org/inscription'},'events');

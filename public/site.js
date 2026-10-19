@@ -37,22 +37,28 @@ const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, ''
 for (const list of document.querySelectorAll('[data-content-list]')) {
   const query = list.querySelector('[data-content-query]');
   const category = list.querySelector('[data-content-category]');
+  const toggles = [...list.querySelectorAll('[data-rubrique-toggle]')];
   if (!query) continue;
   const cards = [...list.querySelectorAll('[data-content-card]')];
   const update = () => {
     const terms = normalize(query.value).trim().split(/\s+/).filter(Boolean);
+    const hiddenRubriques = new Set(toggles.filter(t => t.getAttribute('aria-pressed') === 'false').map(t => t.dataset.rubriqueToggle));
     let visible = 0;
     for (const card of cards) {
       const text = normalize(card.textContent);
-      card.hidden = !terms.every(term => text.includes(term)) || Boolean(category.value && card.dataset.category !== category.value);
+      card.hidden = !terms.every(term => text.includes(term))
+        || Boolean(category && category.value && card.dataset.category !== category.value)
+        || hiddenRubriques.has(card.dataset.rubrique);
       if (!card.hidden) visible++;
     }
-    const filtering = terms.length > 0 || Boolean(category.value);
-    for (const section of list.querySelectorAll('[data-content-section]')) {
-      section.hidden = filtering && !section.querySelector('[data-content-card]:not([hidden])');
-    }
-    list.querySelector('[data-content-empty]').hidden = visible > 0 || (!filtering && !cards.length);
+    list.querySelector('[data-content-empty]').hidden = visible > 0;
   };
   query.addEventListener('input', update);
-  category.addEventListener('change', update);
+  category?.addEventListener('change', update);
+  for (const toggle of toggles) {
+    toggle.addEventListener('click', () => {
+      toggle.setAttribute('aria-pressed', toggle.getAttribute('aria-pressed') === 'false' ? 'true' : 'false');
+      update();
+    });
+  }
 }
