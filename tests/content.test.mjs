@@ -169,6 +169,10 @@ test('CMS collections match real content folders, safe defaults and media output
  }
  assert.equal(config.media_folder,'public/media'); assert.equal(config.public_folder,'/media');
 });
+test('the association statutes are not published', () => {
+ for (const html of [renderPage('', [], []), renderPage('contact', [], []), renderEntry(entry())]) assert.doesNotMatch(html, /statuts/i);
+ assert.ok(!existsSync('public/wp-content/uploads/2025/09/statuts_institut_la_raison_v2.pdf'));
+});
 test('Cloudflare analytics is included once on public pages and entries', () => {
  for (const html of [renderPage('',[],[]), renderPage('contact',[],[]), renderEntry(entry()), renderEntry(entry({},'events'))]) {
   const $=load(html);
