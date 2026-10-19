@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { load } from 'cheerio';
 import { marked } from 'marked';
@@ -73,6 +74,8 @@ export function listing(entries, { search = true, toggles = false, empty = 'Aucu
     <div class="ilr-content-grid">${entries.map(card).join('')}</div>
     <p data-content-empty ${entries.length ? 'hidden' : ''}>${escape(empty)}</p></div>`;
 }
+// Content hash appended to shared assets so browsers fetch them again after each change.
+const assetVersion = file => createHash('sha256').update(readFileSync(`public/${file}`)).digest('hex').slice(0, 10);
 function loadTemplate(name) {
   let html = readFileSync(`src/templates/${name}.html`, 'utf8');
   html = html.replace('<!-- shared header -->', readFileSync('src/templates/header.html', 'utf8'))
@@ -129,8 +132,8 @@ function finalize($, sourceRoute, { title, description = '', image = '', path, a
   $('meta[property="og:image"], meta[name="twitter:image"]').remove();
   if (image) $('head').append(`<meta property="og:image" content="${escape(new URL(image, 'https://raison-institut.fr').href)}">`);
   if (article) $('head').append(`<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': article.collection === 'events' ? 'Event' : 'Article', name: title, headline: title, description, url: canonical, ...(article.collection === 'events' ? { startDate: article.data.date.toISOString(), location: { '@type': 'Place', name: article.data.location } } : { datePublished: article.data.date.toISOString(), author: { '@type': 'Person', name: article.data.author } }) }).replace(/</g, '\\u003c')}</script>`);
-  $('head').append(`<link rel="stylesheet" href="${local('site.css')}">`);
-  $('body').append(`<script src="${local('site.js')}" defer></script>`);
+  $('head').append(`<link rel="stylesheet" href="${local('site.css')}?v=${assetVersion('site.css')}">`);
+  $('body').append(`<script src="${local('site.js')}?v=${assetVersion('site.js')}" defer></script>`);
   // Public measurement token, not an API secret. Shared by all public routes.
   $('body').append(`<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"34a4ac8284674ecabf4ab3c239eca7bb"}'></script>`);
   let html = $.html();
