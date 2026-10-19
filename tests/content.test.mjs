@@ -74,6 +74,8 @@ test('homepage showcases the most recent article of each category', () => {
  const $ = load(renderPage('', articles, []));
  const hrefs = $('.elementor-element-3318b44 [data-content-card] h2 a').map((_, el) => $(el).attr('href')).get();
  assert.deepEqual(hrefs, ['/au-new/', '/re/', '/am-new/']);
+ const order = $('[data-elementor-id="7"] > *').map((_, el) => $(el).attr('data-id')).get();
+ assert.deepEqual(order.slice(0, 4), ['d481d9f', '2c76323', '4638c42', 'a7ca982']);
 });
 test('events use separate URLs and include location and registration link', () => {
  const e = entry({slug:'conference-test',location:'Paris',registrationUrl:'https://example.org/inscription'},'events');

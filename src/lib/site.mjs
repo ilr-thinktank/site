@@ -158,6 +158,8 @@ export function renderPage(route, articles, events) {
     $('.elementor-element-edd70eb .elementor-heading-title').text(home.introTitle);
     $('.elementor-element-90d741d').html(markdown(home.introBody));
     $('.elementor-element-3318b44').html(listing(latestByRubrique(articles), { search: false }));
+    // Productions showcase (title band + grid) sits right after the hero, before « Qui sommes-nous ? ».
+    $('.elementor-element-2c76323, .elementor-element-4638c42').insertBefore('.elementor-element-a7ca982');
     for (const [id, category] of [['94f06af','Conférence'], ['c6dc1c0','Audience'], ['abe7acb','Commission de travail']]) {
       $(`.elementor-element-${id}`).html(listing(events.filter(e => e.data.category === category).slice(0, 3), { search: false, empty: 'Aucun événement pour le moment.' }));
     }
