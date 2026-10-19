@@ -63,6 +63,8 @@ function card(e) {
     ${d.location ? `<p>${escape(d.location)}</p>` : ''}
     <p>${escape(d.description)}</p><a href="${entryUrl(e)}">Consulter →</a></div></article>`;
 }
+// Homepage showcase: the most recent article of each category, in category order (articles are sorted newest first).
+export const latestByRubrique = articles => rubriques.map(([name]) => articles.find(e => e.data.rubrique === name)).filter(Boolean);
 // With `toggles`, category icon buttons replace the category dropdown (Productions page).
 export function listing(entries, { search = true, toggles = false, empty = 'Aucune production pour le moment.', label = 'Rechercher', id = 'content' } = {}) {
   const categories = [...new Set(entries.map(e => e.data.category))];
@@ -155,7 +157,7 @@ export function renderPage(route, articles, events) {
     $('.elementor-element-c4f20c8 .elementor-heading-title').text(home.title);
     $('.elementor-element-edd70eb .elementor-heading-title').text(home.introTitle);
     $('.elementor-element-90d741d').html(markdown(home.introBody));
-    $('.elementor-element-3318b44').html(listing(articles.slice(0, 3), { search: false }));
+    $('.elementor-element-3318b44').html(listing(latestByRubrique(articles), { search: false }));
     for (const [id, category] of [['94f06af','Conférence'], ['c6dc1c0','Audience'], ['abe7acb','Commission de travail']]) {
       $(`.elementor-element-${id}`).html(listing(events.filter(e => e.data.category === category).slice(0, 3), { search: false, empty: 'Aucun événement pour le moment.' }));
     }

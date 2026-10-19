@@ -68,6 +68,13 @@ test('Productions page shows category icons with one toggle per category', () =>
  assert.equal(card.find('.ilr-card-category svg').length, 1);
  assert.doesNotMatch($('.ilr-content-grid').text(), /Essai court/);
 });
+test('homepage showcases the most recent article of each category', () => {
+ const a = (slug, rubrique, date) => entry({ slug, rubrique, date: new Date(date) });
+ const articles = [a('am-new', 'Angles morts', '2026-05-03'), a('au-new', 'Audiences', '2026-05-02'), a('am-old', 'Angles morts', '2026-05-01'), a('au-old', 'Audiences', '2026-04-01'), a('re', 'Raisons d’État', '2026-03-01')];
+ const $ = load(renderPage('', articles, []));
+ const hrefs = $('.elementor-element-3318b44 [data-content-card] h2 a').map((_, el) => $(el).attr('href')).get();
+ assert.deepEqual(hrefs, ['/au-new/', '/re/', '/am-new/']);
+});
 test('events use separate URLs and include location and registration link', () => {
  const e = entry({slug:'conference-test',location:'Paris',registrationUrl:'https://example.org/inscription'},'events');
  const $ = load(renderEntry(e));
