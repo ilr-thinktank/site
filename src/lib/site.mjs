@@ -219,7 +219,7 @@ export function renderPage(route, articles, events) {
     $('.elementor-element-c4f20c8 .elementor-heading-title').text(home.title);
     $('.elementor-element-edd70eb .elementor-heading-title').text(home.introTitle);
     $('.elementor-element-90d741d').html(markdown(home.introBody));
-    $('.elementor-element-3318b44').html(listing(latestByRubrique(articles), { search: false }));
+    $('.elementor-element-3318b44').addClass('ilr-showcase').html(listing(latestByRubrique(articles), { search: false }));
     // Productions showcase (title band + grid) sits right after the hero, before « Qui sommes-nous ? ».
     $('.elementor-element-2c76323, .elementor-element-4638c42').insertBefore('.elementor-element-a7ca982');
     for (const [id, category] of [['94f06af','Conférence'], ['c6dc1c0','Audience'], ['abe7acb','Commission de travail']]) {
