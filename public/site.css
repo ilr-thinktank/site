@@ -16,8 +16,8 @@
 .ilr-content-list .ilr-reset:hover{background:none;color:#0b2c19}
 .ilr-explorer{margin:0 0 32px;border:1px solid #e1e6e2;border-radius:8px;background:#fff;padding:0 20px}
 .ilr-explorer summary{cursor:pointer;padding:16px 0;font-weight:600;color:#0b2c19}
-.ilr-matrix{border-collapse:collapse;width:100%;max-width:640px;margin:0 0 20px;font-size:14px;color:#0b2c19}
-.ilr-matrix caption{caption-side:top;text-align:left;font-size:13px;color:#4a5d52;padding:0 0 10px}
+.ilr-matrix{border-collapse:collapse;width:100%;max-width:640px;margin:0 auto 20px;font-size:14px;color:#0b2c19}
+.ilr-matrix caption{caption-side:top;text-align:center;font-size:13px;color:#4a5d52;padding:0 0 10px}
 .ilr-matrix th,.ilr-matrix td{border:0;padding:4px;text-align:center;vertical-align:middle}
 .ilr-matrix thead th{color:#2b657b}
 .ilr-matrix thead .ilr-icon{width:24px;height:24px}
