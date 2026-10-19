@@ -47,7 +47,11 @@ for (const list of document.querySelectorAll('[data-content-list]')) {
       card.hidden = !terms.every(term => text.includes(term)) || Boolean(category.value && card.dataset.category !== category.value);
       if (!card.hidden) visible++;
     }
-    list.querySelector('[data-content-empty]').hidden = visible > 0;
+    const filtering = terms.length > 0 || Boolean(category.value);
+    for (const section of list.querySelectorAll('[data-content-section]')) {
+      section.hidden = filtering && !section.querySelector('[data-content-card]:not([hidden])');
+    }
+    list.querySelector('[data-content-empty]').hidden = visible > 0 || (!filtering && !cards.length);
   };
   query.addEventListener('input', update);
   category.addEventListener('change', update);

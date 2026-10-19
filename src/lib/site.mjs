@@ -56,6 +56,23 @@ export function listing(entries, { search = true, empty = 'Aucune production pou
     <div class="ilr-content-grid">${entries.map(card).join('')}</div>
     <p data-content-empty ${entries.length ? 'hidden' : ''}>${escape(empty)}</p></div>`;
 }
+// Productions page sections, in display order. Keep in sync with the CMS and content schema.
+export const rubriques = [
+  ['audiences', 'Audiences'], ['bancs-dessai', 'Bancs d’essai'],
+  ['raisons-detat', 'Raisons d’État'], ['angles-morts', 'Angles morts'],
+];
+export function rubriqueListing(entries, { label = 'Rechercher', id = 'content' } = {}) {
+  const categories = [...new Set(entries.map(e => e.data.category))];
+  const sections = rubriques.map(([anchor, name]) => {
+    const items = entries.filter(e => e.data.rubrique === name);
+    return `<section class="ilr-rubrique" id="${anchor}" data-content-section><h2 class="ilr-rubrique-title">${escape(name)}</h2>
+    ${items.length ? `<div class="ilr-content-grid">${items.map(card).join('')}</div>` : '<p class="ilr-rubrique-empty">Aucune production dans cette rubrique pour le moment.</p>'}</section>`;
+  });
+  return `<div class="ilr-content-list" data-content-list>
+    <div class="ilr-search"><label for="${id}-query">${label}</label><input id="${id}-query" type="search" data-content-query placeholder="${label}…"><label for="${id}-category">Catégorie</label><select id="${id}-category" data-content-category><option value="">Toutes les catégories</option>${categories.map(c => `<option>${escape(c)}</option>`).join('')}</select></div>
+    ${sections.join('')}
+    <p data-content-empty hidden>Aucune production pour le moment.</p></div>`;
+}
 function loadTemplate(name) {
   let html = readFileSync(`src/templates/${name}.html`, 'utf8');
   html = html.replace('<!-- shared header -->', readFileSync('src/templates/header.html', 'utf8'))
@@ -125,7 +142,7 @@ function finalize($, sourceRoute, { title, description = '', image = '', path, a
 export function renderPage(route, articles, events) {
   const $ = loadTemplate(route || 'home');
   if (route === 'productions') {
-    $('.elementor-element-b01dcef').html(listing(articles, { label: 'Rechercher une production', id: 'productions' }));
+    $('.elementor-element-b01dcef').html(rubriqueListing(articles, { label: 'Rechercher une production', id: 'productions' }));
     $('.elementor-element-e048bce').remove();
   } else if (route === 'nos-evenements') {
     $('.elementor-element-fa75b21').html(listing(events, { label: 'Rechercher un événement', empty: 'Aucun événement pour le moment.', id: 'events' }));

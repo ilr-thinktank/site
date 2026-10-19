@@ -10,7 +10,7 @@ const common = {
 export const collections = {
   articles: defineCollection({
     loader: glob({ pattern: '**/*.md', base: './content/articles' }),
-    schema: z.object({ ...common, author: z.string().min(1), authorRole: z.string().default(''), category: z.enum(['Vidéo', 'Tribune', 'Essai court', 'Podcast', 'Analyse de fond']).default('Essai court') }),
+    schema: z.object({ ...common, author: z.string().min(1), authorRole: z.string().default(''), rubrique: z.enum(['Audiences', 'Bancs d’essai', 'Raisons d’État', 'Angles morts']), category: z.enum(['Vidéo', 'Tribune', 'Essai court', 'Podcast', 'Analyse de fond']).default('Essai court') }),
   }),
   events: defineCollection({
     loader: glob({ pattern: '**/*.md', base: './content/events' }),

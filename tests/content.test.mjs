@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import YAML from 'yaml';
 import { load } from 'cheerio';
-import { published, validateSlugs, markdown, renderEntry, renderPage, listing, local } from '../src/lib/site.mjs';
-const entry = (overrides = {}, collection = 'articles') => ({ collection, body: '## Un titre\n\nTexte **important**.', data: { title: 'Une nouvelle publication', slug: 'une-nouvelle-publication', date: new Date('2026-01-01'), author: 'Auteur', authorRole: '', category: 'Essai court', image: '', pdf: '', description: 'Résumé', draft: false, ...overrides } });
+import { published, validateSlugs, markdown, renderEntry, renderPage, listing, local, rubriques } from '../src/lib/site.mjs';
+const entry = (overrides = {}, collection = 'articles') => ({ collection, body: '## Un titre\n\nTexte **important**.', data: { title: 'Une nouvelle publication', slug: 'une-nouvelle-publication', date: new Date('2026-01-01'), author: 'Auteur', authorRole: '', rubrique: 'Audiences', category: 'Essai court', image: '', pdf: '', description: 'Résumé', draft: false, ...overrides } });
 test('draft and future articles are excluded; future events can be announced', () => {
  const a = entry(); const draft = entry({draft:true}); const future = entry({date:new Date('2099-01-01')}); const event = entry({date:new Date('2099-01-01')}, 'events');
  assert.deepEqual(published([a,draft,future,event],new Date('2026-10-12')), [event,a]);
@@ -48,6 +48,19 @@ test('Productions terminology, metadata and navigation are consistent', () => {
  assert.equal(article('.wpr-nav-menu a[href="/productions/"]').attr('aria-current'), 'true');
  const config = YAML.parse(readFileSync('public/admin/config.yml', 'utf8'));
  assert.equal(config.collections.find(c => c.name === 'articles').label, 'Productions');
+});
+test('Productions page groups articles into the four rubriques', () => {
+ const names = rubriques.map(([, name]) => name);
+ assert.deepEqual(names, ['Audiences', 'Bancs d’essai', 'Raisons d’État', 'Angles morts']);
+ const config = YAML.parse(readFileSync('public/admin/config.yml', 'utf8'));
+ assert.deepEqual(config.collections.find(c => c.name === 'articles').fields.find(f => f.name === 'rubrique').options, names);
+ assert.match(readFileSync('src/content.config.ts', 'utf8'), new RegExp(`rubrique: z\\.enum\\(\\[${names.map(n => `'${n}'`).join(', ')}\\]\\)`));
+ const $ = load(renderPage('productions', [entry({ slug: 'a', rubrique: 'Raisons d’État' }), entry({ slug: 'b', rubrique: 'Angles morts' })], []));
+ assert.deepEqual($('.ilr-rubrique-title').map((_, el) => $(el).text()).get(), names);
+ assert.equal($('#raisons-detat [data-content-card] a').first().attr('href'), '/a/');
+ assert.equal($('#angles-morts [data-content-card] a').first().attr('href'), '/b/');
+ assert.equal($('#audiences [data-content-card]').length, 0);
+ assert.equal($('#audiences .ilr-rubrique-empty').length, 1);
 });
 test('events use separate URLs and include location and registration link', () => {
  const e = entry({slug:'conference-test',location:'Paris',registrationUrl:'https://example.org/inscription'},'events');

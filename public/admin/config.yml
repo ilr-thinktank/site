@@ -27,6 +27,7 @@ collections:
       - {label: Date de publication, name: date, widget: datetime, type: date, format: YYYY-MM-DD}
       - {label: Auteur, name: author, widget: string}
       - {label: Fonction de l’auteur, name: authorRole, widget: string, required: false}
+      - {label: Rubrique, name: rubrique, widget: select, options: [Audiences, Bancs d’essai, Raisons d’État, Angles morts]}
       - {label: Catégorie, name: category, widget: select, options: [Vidéo, Tribune, Essai court, Podcast, Analyse de fond], default: Essai court}
       - {label: Résumé, name: description, widget: text, required: false}
       - {label: Image de couverture, name: image, widget: image, required: false}
