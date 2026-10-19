@@ -1,6 +1,23 @@
 .ilr-content-list{width:100%;color:#0b2c19}.ilr-content-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:24px}.ilr-content-card{background:#fff;border:1px solid #e1e6e2;border-radius:8px;overflow:hidden;max-width:600px}.ilr-content-card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}.ilr-card-copy{padding:24px}.ilr-content-card h2{font-family:Georgia,serif;font-size:26px;line-height:1.25;margin:10px 0}.ilr-content-card a{color:#0b2c19}.ilr-content-card p{font-size:15px;line-height:1.6}.ilr-card-category{font-weight:600;color:#2b657b;display:flex;align-items:center;gap:8px}.ilr-card-category .ilr-icon{width:22px;height:22px;flex:none}.ilr-toggles{flex-basis:100%;display:flex;flex-wrap:wrap;gap:10px}.ilr-toggle{display:inline-flex;align-items:center;gap:8px;border:1.5px solid #2b657b;border-radius:999px;padding:8px 16px 8px 12px;background:#2b657b;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s,color .15s,opacity .15s}.ilr-toggle .ilr-icon{width:24px;height:24px;flex:none}.ilr-toggle small{font-size:12px;font-weight:600;min-width:20px;padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.22);text-align:center}.ilr-toggle[aria-pressed="false"]{background:#fff;color:#2b657b;opacity:.6}.ilr-toggle[aria-pressed="false"] small{background:#e6eef1}.ilr-toggle[aria-pressed="false"] span{text-decoration:line-through}.ilr-toggles .ilr-toggle:hover,.ilr-toggles .ilr-toggle:focus{background:#2b657b;color:#fff;opacity:1}.ilr-toggles .ilr-toggle[aria-pressed="false"]:hover,.ilr-toggles .ilr-toggle[aria-pressed="false"]:focus{background:#fff;color:#2b657b;opacity:.85}.ilr-toggle:focus-visible{outline:2px solid #0b2c19;outline-offset:2px}
 .ilr-card-category{flex-wrap:wrap}
-@media(min-width:1025px){.ilr-showcase .ilr-content-list{box-sizing:border-box;padding:0 24px}.ilr-showcase .ilr-content-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}.ilr-showcase .ilr-card-copy{padding:18px}.ilr-showcase .ilr-content-card h2{font-size:20px}.ilr-showcase .ilr-content-card p{font-size:14px}.ilr-showcase .ilr-card-category{font-size:13px}.ilr-showcase .ilr-card-category .ilr-icon{width:18px;height:18px}.ilr-showcase .ilr-card-badge{margin-left:0}}
+/* Homepage showcase on desktop: the latest production of each category on the points of a pentagram. */
+@media(min-width:1025px){
+.ilr-showcase .ilr-content-list{box-sizing:border-box;padding:0 24px}
+.ilr-showcase .ilr-content-grid{display:block;position:relative;width:100%;max-width:1000px;aspect-ratio:1000/760;margin:0 auto;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 760'%3E%3Ccircle cx='500' cy='400' r='300' fill='none' stroke='%23dfe7e3' stroke-width='1.5'/%3E%3Cpath d='M500 100L676 643L215 307L785 307L324 643Z' fill='none' stroke='%23b9cbc2' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% 100% no-repeat}
+.ilr-showcase .ilr-content-card{position:absolute;left:var(--x);top:var(--y);width:23%;transform:translate(-50%,-50%);box-shadow:0 6px 20px rgba(11,44,25,.08);transition:box-shadow .2s,transform .2s}
+.ilr-showcase .ilr-content-card:hover{box-shadow:0 10px 28px rgba(11,44,25,.16);transform:translate(-50%,calc(-50% - 3px))}
+.ilr-showcase [data-rubrique="Audiences"]{--x:50%;--y:13.2%}
+.ilr-showcase [data-rubrique="Bancs d’essai"]{--x:78.5%;--y:40.4%}
+.ilr-showcase [data-rubrique="Raisons d’État"]{--x:67.6%;--y:84.6%}
+.ilr-showcase [data-rubrique="Angles morts"]{--x:32.4%;--y:84.6%}
+.ilr-showcase [data-rubrique="Doléances"]{--x:21.5%;--y:40.4%}
+.ilr-showcase .ilr-content-card img,.ilr-showcase .ilr-card-desc,.ilr-showcase .ilr-card-themes,.ilr-showcase .ilr-card-more,.ilr-showcase .ilr-card-badge{display:none}
+.ilr-showcase .ilr-card-copy{padding:16px 18px}
+.ilr-showcase .ilr-content-card h2{font-size:19px;margin:8px 0}
+.ilr-showcase .ilr-content-card p{font-size:13px;margin:0}
+.ilr-showcase .ilr-card-category{font-size:13px}
+.ilr-showcase .ilr-card-category .ilr-icon{width:20px;height:20px}
+}
 .ilr-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .ilr-chips{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px}
 .ilr-content-list .ilr-chip,.ilr-content-list .ilr-chip:focus{border:1px solid #c9d6dc;border-radius:999px;padding:6px 12px;background:#fff;color:#0b2c19;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}

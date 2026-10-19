@@ -67,11 +67,11 @@ function card(e) {
     ${d.image ? `<a href="${entryUrl(e)}" tabindex="-1" aria-hidden="true"><img src="${escape(d.image)}" alt="" loading="lazy"></a>` : ''}
     <div class="ilr-card-copy"><p class="ilr-card-category">${icon(d.rubrique)}<span>${escape(label)}</span>${d.transcript?.length ? '<span class="ilr-card-badge">Transcription</span>' : ''}</p>
     <h2><a href="${entryUrl(e)}">${escape(d.title)}</a></h2>
-    <p><time datetime="${d.date.toISOString()}">${formatDate(d.date)}</time>${author}</p>
+    <p class="ilr-card-meta"><time datetime="${d.date.toISOString()}">${formatDate(d.date)}</time>${author}</p>
     ${d.location ? `<p>${escape(d.location)}</p>` : ''}
-    <p>${escape(d.description)}</p>
+    <p class="ilr-card-desc">${escape(d.description)}</p>
     ${themesOf(d).length ? `<p class="ilr-card-themes">${themesOf(d).map(escape).join(' · ')}</p>` : ''}
-    <a href="${entryUrl(e)}">Consulter →</a></div></article>`;
+    <a class="ilr-card-more" href="${entryUrl(e)}">Consulter →</a></div></article>`;
 }
 const countBy = (items, key) => {
   const counts = new Map();
