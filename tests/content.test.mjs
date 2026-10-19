@@ -51,7 +51,7 @@ test('Productions terminology, metadata and navigation are consistent', () => {
 });
 test('Productions page shows category icons with one toggle per category', () => {
  const names = rubriques.map(([name]) => name);
- assert.deepEqual(names, ['Audiences', 'Bancs d’essai', 'Raisons d’État', 'Angles morts']);
+ assert.deepEqual(names, ['Audiences', 'Bancs d’essai', 'Raisons d’État', 'Angles morts', 'Doléances']);
  const config = YAML.parse(readFileSync('public/admin/config.yml', 'utf8'));
  const fields = config.collections.find(c => c.name === 'articles').fields;
  assert.deepEqual(fields.find(f => f.name === 'rubrique').options, names);
@@ -59,7 +59,7 @@ test('Productions page shows category icons with one toggle per category', () =>
  assert.match(readFileSync('src/content.config.ts', 'utf8'), new RegExp(`rubrique: z\\.enum\\(\\[${names.map(n => `'${n}'`).join(', ')}\\]\\)`));
  const $ = load(renderPage('productions', [entry({ slug: 'a', rubrique: 'Raisons d’État' }), entry({ slug: 'b', rubrique: 'Raisons d’État' })], []));
  assert.deepEqual($('[data-rubrique-toggle]').map((_, el) => $(el).attr('data-rubrique-toggle')).get(), names);
- assert.equal($('[data-rubrique-toggle][aria-pressed="true"]').length, 4);
+ assert.equal($('[data-rubrique-toggle][aria-pressed="true"]').length, 5);
  assert.equal($('[data-rubrique-toggle="Raisons d’État"] small').text(), '2');
  assert.equal($('[data-content-category]').length, 0);
  const card = $('[data-content-card]').first();

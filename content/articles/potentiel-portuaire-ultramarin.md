@@ -1,5 +1,5 @@
 ---
-title: "Le potentiel portuaire ultramarin, angle mort de la stratégie maritime française"
+title: "Le potentiel portuaire ultramarin de la France"
 slug: potentiel-portuaire-ultramarin
 date: 2026-07-26
 author: Autrice B

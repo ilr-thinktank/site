@@ -1,6 +1,6 @@
 ---
-title: "Villers-Cotterêts, ou la langue comme raison d’État"
-slug: villers-cotterets-langue-raison-detat
+title: "Villers-Cotterêts, ou la langue de l’État"
+slug: villers-cotterets-langue-etat
 date: 2026-08-22
 author: Auteur C
 rubrique: Raisons d’État

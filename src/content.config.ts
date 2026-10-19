@@ -16,7 +16,7 @@ const common = {
 export const collections = {
   articles: defineCollection({
     loader: glob({ pattern: '**/*.md', base: './content/articles' }),
-    schema: z.object({ ...common, author: z.string().min(1), authorRole: z.string().default(''), rubrique: z.enum(['Audiences', 'Bancs d’essai', 'Raisons d’État', 'Angles morts']), themes: z.array(z.string().min(1)).default([]), media: media.default(''), transcript: z.array(z.object({ time: timestamp, heading: z.string().default(''), text: z.string().min(1) })).default([]), category: z.enum(['Vidéo', 'Tribune', 'Essai court', 'Podcast', 'Analyse de fond']).default('Essai court') }),
+    schema: z.object({ ...common, author: z.string().min(1), authorRole: z.string().default(''), rubrique: z.enum(['Audiences', 'Bancs d’essai', 'Raisons d’État', 'Angles morts', 'Doléances']), themes: z.array(z.string().min(1)).default([]), media: media.default(''), transcript: z.array(z.object({ time: timestamp, heading: z.string().default(''), text: z.string().min(1) })).default([]), category: z.enum(['Vidéo', 'Tribune', 'Essai court', 'Podcast', 'Analyse de fond']).default('Essai court') }),
   }),
   events: defineCollection({
     loader: glob({ pattern: '**/*.md', base: './content/events' }),

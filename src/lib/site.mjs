@@ -47,6 +47,7 @@ export const rubriques = [
   ['Bancs d’essai', '<path d="M2 15h20M4 15v6M20 15v6M4 19h16"/><path d="M6.5 15a5.5 5.5 0 0 1 11 0"/><path d="M12 15l3-3.5"/>'],
   ['Raisons d’État', '<path d="M3 9l9-6 9 6z"/><path d="M5 9v9M9.5 9v9M14.5 9v9M19 9v9M3 21h18M4 18h16"/>'],
   ['Angles morts', '<path d="M2 12s3.5-7 10-7c2 0 3.7.6 5.1 1.5M22 12s-3.5 7-10 7c-2 0-3.7-.6-5.1-1.5"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/>'],
+  ['Doléances', '<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M9 8h3M9 12h7M9 16h7"/>'],
 ];
 const icon = name => {
   const paths = rubriques.find(([n]) => n === name)?.[1];
