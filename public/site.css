@@ -7,7 +7,7 @@
 .ilr-showcase .ilr-card-copy{flex:1;display:flex;flex-direction:column}
 .ilr-showcase .ilr-card-more{margin-top:auto}
 /* Homepage hero links: one centred row of equal buttons, wrapping on small screens. */
-.elementor-element-10f4999>.e-con-inner{display:flex!important;flex-wrap:wrap;justify-content:center;gap:16px}
+.elementor-element-10f4999>.e-con-inner{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;gap:16px!important}
 .elementor-element-10f4999>.e-con-inner>.elementor-element{flex:0 0 auto;width:auto!important;max-width:100%;margin:0!important}
 .elementor-element-10f4999 .wpr-button{width:220px!important;max-width:100%}
 .ilr-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
