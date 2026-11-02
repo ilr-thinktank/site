@@ -13,6 +13,25 @@ locale: fr
 media_folder: public/media
 public_folder: /media
 collections:
+  - name: raisonnements
+    label: Raisonnements
+    label_singular: Raisonnement
+    folder: content/raisonnements
+    create: true
+    slug: '{{slug}}'
+    preview_path: 'raisonnements/{{slug}}/'
+    summary: '{{title}} — {{author}}'
+    fields:
+      - {label: Titre, name: title, widget: string}
+      - {label: "Adresse URL (minuscules et tirets, ne pas modifier après publication)", name: slug, widget: string, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Minuscules, chiffres et tirets uniquement']}
+      - {label: Date de publication, name: date, widget: datetime, type: date, format: YYYY-MM-DD}
+      - {label: Auteur, name: author, widget: string}
+      - {label: Fonction de l’auteur, name: authorRole, widget: string, required: false}
+      - {label: Résumé, name: description, widget: text, required: false}
+      - {label: Image de couverture, name: image, widget: image, required: false}
+      - {label: Document PDF, name: pdf, widget: file, required: false}
+      - {label: Brouillon (non visible sur le site), name: draft, widget: boolean, default: true}
+      - {label: Texte, name: body, widget: markdown}
   - name: articles
     label: Productions
     label_singular: Production

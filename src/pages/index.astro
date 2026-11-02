@@ -3,7 +3,8 @@ import { getCollection } from 'astro:content';
 import { published, validateSlugs, renderPage } from '../lib/site.mjs';
 const articles = published(await getCollection('articles'));
 const events = published(await getCollection('events'));
-validateSlugs(articles, events);
+const raisonnements = published(await getCollection('raisonnements'));
+validateSlugs(articles, events, raisonnements);
 const html = renderPage('', articles, events);
 ---
 <Fragment set:html={html} />

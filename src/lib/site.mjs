@@ -5,7 +5,7 @@ import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import YAML from 'yaml';
 
-export const routes = ['linstitut', 'devenir-adherent', 'nos-evenements', 'productions', 'contact'];
+export const routes = ['linstitut', 'devenir-adherent', 'nos-evenements', 'raisonnements', 'productions', 'contact'];
 const reserved = new Set([...routes, 'publications', 'admin', 'evenements', 'media', 'wp-content', 'wp-includes']);
 export const base = () => (process.env.SITE_BASE || '/').replace(/\/$/, '');
 export const local = path => `${base()}/${path.replace(/^\//, '')}`;
@@ -24,7 +24,7 @@ export function published(entries, now = new Date()) {
   return entries.filter(e => !e.data.draft && (e.collection === 'events' || e.data.date <= now))
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 }
-export function validateSlugs(articles, events) {
+export function validateSlugs(articles, events, raisonnements = []) {
   const seen = new Set();
   for (const e of articles) {
     if (reserved.has(e.data.slug) || seen.has(e.data.slug)) throw new Error(`Reserved or duplicate article slug: ${e.data.slug}`);
@@ -35,9 +35,15 @@ export function validateSlugs(articles, events) {
     if (eventSlugs.has(e.data.slug)) throw new Error(`Duplicate event slug: ${e.data.slug}`);
     eventSlugs.add(e.data.slug);
   }
+  const raisonnementSlugs = new Set();
+  for (const e of raisonnements) {
+    if (raisonnementSlugs.has(e.data.slug)) throw new Error(`Duplicate raisonnement slug: ${e.data.slug}`);
+    raisonnementSlugs.add(e.data.slug);
+  }
 }
+const sectionPath = e => ({ events: 'evenements/', raisonnements: 'raisonnements/' }[e.collection] ?? '');
 export function entryUrl(e) {
-  return local(`${e.collection === 'events' ? 'evenements/' : ''}${e.data.slug}/`);
+  return local(`${sectionPath(e)}${e.data.slug}/`);
 }
 const formatDate = date => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeZone: 'UTC' }).format(date);
 // Production categories, in display order, with their icons. Keep in sync with the CMS and content schema.
@@ -65,7 +71,7 @@ function card(e) {
   const author = d.author ? (d.rubrique ? ` · <a class="ilr-card-author" href="${productionsUrl('auteur', d.author)}">${escape(d.author)}</a>` : ` · ${escape(d.author)}`) : '';
   return `<article class="ilr-content-card" data-content-card data-category="${escape(d.category)}"${attrs}>
     ${d.image ? `<a href="${entryUrl(e)}" tabindex="-1" aria-hidden="true"><img src="${escape(d.image)}" alt="" loading="lazy"></a>` : ''}
-    <div class="ilr-card-copy"><p class="ilr-card-category">${icon(d.rubrique)}<span>${escape(label)}</span>${d.transcript?.length ? '<span class="ilr-card-badge">Transcription</span>' : ''}</p>
+    <div class="ilr-card-copy">${label ? `<p class="ilr-card-category">${icon(d.rubrique)}<span>${escape(label)}</span>${d.transcript?.length ? '<span class="ilr-card-badge">Transcription</span>' : ''}</p>` : ''}
     <h2><a href="${entryUrl(e)}">${escape(d.title)}</a></h2>
     <p class="ilr-card-meta"><time datetime="${d.date.toISOString()}">${formatDate(d.date)}</time>${author}</p>
     ${d.location ? `<p>${escape(d.location)}</p>` : ''}
@@ -131,10 +137,10 @@ export function transcriptHtml(transcript, playable) {
 }
 // Homepage showcase: the most recent article of each category, in category order (articles are sorted newest first).
 export const latestByRubrique = articles => rubriques.map(([name]) => articles.find(e => e.data.rubrique === name)).filter(Boolean);
-export function listing(entries, { search = true, empty = 'Aucune production pour le moment.', label = 'Rechercher', id = 'content' } = {}) {
+export function listing(entries, { search = true, categoryFilter = true, empty = 'Aucune production pour le moment.', label = 'Rechercher', id = 'content' } = {}) {
   const categories = [...new Set(entries.map(e => e.data.category))];
   return `<div class="ilr-content-list" data-content-list>
-    ${search ? `<div class="ilr-search"><label for="${id}-query">${label}</label><input id="${id}-query" type="search" data-content-query placeholder="${label}…"><label for="${id}-category">Catégorie</label><select id="${id}-category" data-content-category><option value="">Toutes les catégories</option>${categories.map(c => `<option>${escape(c)}</option>`).join('')}</select></div>` : ''}
+    ${search ? `<div class="ilr-search"><label for="${id}-query">${label}</label><input id="${id}-query" type="search" data-content-query placeholder="${label}…">${categoryFilter ? `<label for="${id}-category">Catégorie</label><select id="${id}-category" data-content-category><option value="">Toutes les catégories</option>${categories.map(c => `<option>${escape(c)}</option>`).join('')}</select>` : ''}</div>` : ''}
     <div class="ilr-content-grid">${entries.map(card).join('')}</div>
     <p data-content-empty ${entries.length ? 'hidden' : ''}>${escape(empty)}</p></div>`;
 }
@@ -179,7 +185,7 @@ function finalize($, sourceRoute, { title, description = '', image = '', path, a
     const set = $(el).attr('srcset');
     if (set) $(el).attr('srcset', set.split(',').map(s => { const [u, ...rest] = s.trim().split(/\s+/); return [fix(u), ...rest].join(' '); }).join(', '));
   });
-  const navigationRoute = article ? (article.collection === 'events' ? 'nos-evenements/' : 'productions/') : (sourceRoute ? `${sourceRoute}/` : '');
+  const navigationRoute = article ? ({ events: 'nos-evenements/', raisonnements: 'raisonnements/' }[article.collection] ?? 'productions/') : (sourceRoute ? `${sourceRoute}/` : '');
   $('.wpr-nav-menu a, .wpr-mobile-nav-menu a').each((_, el) => {
     if ($(el).attr('href') === local(navigationRoute)) $(el).addClass('wpr-active-menu-item').attr('aria-current', article ? 'true' : 'page');
   });
@@ -206,9 +212,15 @@ function finalize($, sourceRoute, { title, description = '', image = '', path, a
   html = html.replace(/url\((['"]?)\/(wp-content|wp-includes)\//g, (_, quote, folder) => `url(${quote}${local(folder + '/')}`);
   return html;
 }
-export function renderPage(route, articles, events) {
-  const $ = loadTemplate(route || 'home');
-  if (route === 'productions') {
+export function renderPage(route, articles, events, raisonnements = []) {
+  // Raisonnements share the Productions page shell.
+  const $ = loadTemplate(route === 'raisonnements' ? 'productions' : route || 'home');
+  if (route === 'raisonnements') {
+    $('h1').text('Nos Raisonnements');
+    $('.elementor-element-b01dcef').html(listing(raisonnements, { categoryFilter: false, empty: 'Aucun raisonnement pour le moment.', label: 'Rechercher un raisonnement', id: 'raisonnements' }));
+    $('.elementor-element-e048bce').remove();
+    return finalize($, route, { title: 'Raisonnements', description: 'Les raisonnements de l’Institut La Raison : des formats réguliers pour penser l’actualité politique française.' });
+  } else if (route === 'productions') {
     $('.elementor-element-b01dcef').html(productionsListing(articles));
     $('.elementor-element-e048bce').remove();
   } else if (route === 'nos-evenements') {
@@ -222,6 +234,12 @@ export function renderPage(route, articles, events) {
     $('.elementor-element-3318b44').addClass('ilr-showcase').html(listing(latestByRubrique(articles), { search: false }));
     // Productions showcase (title band + grid) sits right after the hero, before « Qui sommes-nous ? ».
     $('.elementor-element-2c76323, .elementor-element-4638c42').insertBefore('.elementor-element-a7ca982');
+    // Hero links follow the menu order.
+    const productionsButton = $('.elementor-element-1b65e8e');
+    const raisonnementsButton = productionsButton.clone();
+    raisonnementsButton.find('a').attr('href', 'raisonnements/');
+    raisonnementsButton.find('.wpr-button-text').text('Nos raisonnements');
+    productionsButton.before(raisonnementsButton);
     for (const [id, category] of [['94f06af','Conférence'], ['c6dc1c0','Audience'], ['abe7acb','Commission de travail']]) {
       $(`.elementor-element-${id}`).html(listing(events.filter(e => e.data.category === category).slice(0, 3), { search: false, empty: 'Aucun événement pour le moment.' }));
     }
@@ -234,7 +252,7 @@ export function renderEntry(e) {
   $('.elementor-element-b7a433b .elementor-heading-title').text(d.title);
   const byline = e.collection === 'events'
     ? `<p><time datetime="${d.date.toISOString()}">${formatDate(d.date)}</time>${d.location ? `<br>${escape(d.location)}` : ''}</p>`
-    : `<p>par <strong><a class="ilr-author-link" href="${productionsUrl('auteur', d.author)}" title="Toutes les productions de cet auteur">${escape(d.author)}</a></strong>${d.authorRole ? `<br><em>${escape(d.authorRole)}</em>` : ''}</p>`
+    : `<p>par <strong>${e.collection === 'articles' ? `<a class="ilr-author-link" href="${productionsUrl('auteur', d.author)}" title="Toutes les productions de cet auteur">${escape(d.author)}</a>` : escape(d.author)}</strong>${d.authorRole ? `<br><em>${escape(d.authorRole)}</em>` : ''}</p>`
       + (d.rubrique ? `<p class="ilr-entry-tags"><a class="ilr-entry-category" href="${productionsUrl('categories', d.rubrique)}">${icon(d.rubrique)}<span>${escape(d.rubrique)}</span></a>${themesOf(d).map(t => `<a class="ilr-tag" href="${productionsUrl('theme', t)}">${escape(t)}</a>`).join('')}</p>` : '');
   $('.elementor-element-da02cea').html(byline);
   const player = e.collection === 'articles' ? mediaEmbed(d.media) : '';
@@ -242,5 +260,5 @@ export function renderEntry(e) {
     + (e.collection === 'articles' ? transcriptHtml(d.transcript, Boolean(player)) : '')
     + (d.pdf ? `<p><a href="${escape(d.pdf)}">Télécharger le PDF</a></p>` : '')
     + (d.registrationUrl ? `<p><a href="${escape(d.registrationUrl)}" rel="noopener noreferrer">S’inscrire</a></p>` : ''));
-  return finalize($, 'penser-la-situation', { title: d.title, description: d.description, image: d.image, path: `${e.collection === 'events' ? 'evenements/' : ''}${d.slug}/`, article: e });
+  return finalize($, 'penser-la-situation', { title: d.title, description: d.description, image: d.image, path: `${sectionPath(e)}${d.slug}/`, article: e });
 }

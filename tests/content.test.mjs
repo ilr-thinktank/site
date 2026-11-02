@@ -103,6 +103,23 @@ test('articles link back to filtered views and render media with a timed transcr
  assert.equal($('.ilr-time').length, 2);
  assert.equal($('iframe, audio, video').length, 0);
 });
+test('Raisonnements have their own page, menu entry and URLs', () => {
+ const r = { collection: 'raisonnements', body: 'Texte', data: { title: 'Un raisonnement', slug: 'un-raisonnement', date: new Date('2026-01-01'), author: 'Auteur', authorRole: '', description: 'Résumé', image: '', pdf: '', draft: false } };
+ const $ = load(renderPage('raisonnements', [entry()], [], [r]));
+ assert.equal($('h1').text().trim(), 'Nos Raisonnements');
+ assert.equal($('link[rel="canonical"]').attr('href'), 'https://raison-institut.fr/raisonnements/');
+ assert.equal($('[data-content-card]').length, 1);
+ assert.equal($('[data-content-card] h2 a').attr('href'), '/raisonnements/un-raisonnement/');
+ assert.equal($('[data-content-category]').length, 0);
+ assert.equal($('.ilr-card-category').length, 0);
+ assert.deepEqual($('.wpr-nav-menu a').map((_, a) => $(a).text()).get(), ['Accueil', 'L’Institut', 'Evénements', 'Raisonnements', 'Productions', 'Adhérer', 'Contact']);
+ assert.equal($('.wpr-nav-menu a[href="/raisonnements/"]').attr('aria-current'), 'page');
+ const article = load(renderEntry(r));
+ assert.equal(article('link[rel="canonical"]').attr('href'), 'https://raison-institut.fr/raisonnements/un-raisonnement/');
+ assert.equal(article('.ilr-author-link').length, 0);
+ const home = load(renderPage('', [], []));
+ assert.deepEqual(home('.elementor-element-10f4999 .wpr-button-text').map((_, b) => $(b).text().trim()).get(), ['Découvrir l’Institut', 'Nos événements', 'Nos raisonnements', 'Nos productions']);
+});
 test('homepage showcases the most recent article of each category', () => {
  const a = (slug, rubrique, date) => entry({ slug, rubrique, date: new Date(date) });
  const articles = [a('am-new', 'Angles morts', '2026-05-03'), a('au-new', 'Audiences', '2026-05-02'), a('am-old', 'Angles morts', '2026-05-01'), a('au-old', 'Audiences', '2026-04-01'), a('re', 'Raisons d’État', '2026-03-01')];

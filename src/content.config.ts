@@ -18,6 +18,10 @@ export const collections = {
     loader: glob({ pattern: '**/*.md', base: './content/articles' }),
     schema: z.object({ ...common, author: z.string().min(1), authorRole: z.string().default(''), rubrique: z.enum(['Audiences', 'Bancs d’essai', 'Raisons d’État', 'Angles morts', 'Doléances']), themes: z.array(z.string().min(1)).default([]), media: media.default(''), transcript: z.array(z.object({ time: timestamp, heading: z.string().default(''), text: z.string().min(1) })).default([]), category: z.enum(['Vidéo', 'Tribune', 'Essai court', 'Podcast', 'Analyse de fond']).default('Essai court') }),
   }),
+  raisonnements: defineCollection({
+    loader: glob({ pattern: '**/*.md', base: './content/raisonnements' }),
+    schema: z.object({ ...common, author: z.string().min(1), authorRole: z.string().default('') }),
+  }),
   events: defineCollection({
     loader: glob({ pattern: '**/*.md', base: './content/events' }),
     schema: z.object({ ...common, location: z.string().default(''), category: z.enum(['Conférence', 'Audience', 'Commission de travail']).default('Conférence'), registrationUrl: z.string().refine(value => !value || /^https:\/\//.test(value), 'Use an HTTPS registration URL').default('') }),
