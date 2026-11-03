@@ -50,7 +50,7 @@ collections:
       # Format (Vidéo, Tribune, Essai court, Podcast, Analyse de fond): hidden for now, kept in content.
       - {label: Format, name: category, widget: hidden, default: Essai court}
       # Themes link productions across categories and authors (filters and infographic on /productions/). Add options here as needed.
-      - {label: Thèmes, name: themes, widget: select, multiple: true, required: false, options: [Souveraineté, Démocratie, Institutions, Élections, Partis politiques, Europe, Relations internationales, Économie, Territoires, Société]}
+      - {label: Thèmes, name: themes, widget: select, multiple: true, required: false, options: [Souveraineté, Démocratie, Institutions, Élections, Partis politiques, Droit, Europe, Relations internationales, Économie, Industrie, Territoires, Outre-mer, Services publics, Société, Histoire]}
       - {label: Résumé, name: description, widget: text, required: false}
       - {label: Image de couverture, name: image, widget: image, required: false}
       - {label: Document PDF, name: pdf, widget: file, required: false}

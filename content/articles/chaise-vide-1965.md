@@ -7,6 +7,9 @@ rubrique: Raisons d’État
 themes:
   - Relations internationales
   - Europe
+  - Souveraineté
+  - Institutions
+  - Histoire
 category: Essai court
 description: Pendant six mois, la France refuse de siéger au Conseil des ministres de la Communauté européenne. Retour sur une crise qui a fixé, pour longtemps, la place des nations dans la construction européenne.
 draft: false

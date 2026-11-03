@@ -7,6 +7,8 @@ rubrique: Audiences
 themes:
   - Démocratie
   - Société
+  - Institutions
+  - Histoire
 category: Vidéo
 description: De retour d’Amérique, Alexis de Tocqueville explique ce que la démocratie fait aux sociétés, et pourquoi elle peut s’éteindre doucement.
 draft: false

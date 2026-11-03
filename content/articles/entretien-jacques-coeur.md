@@ -8,6 +8,7 @@ themes:
   - Économie
   - Souveraineté
   - Relations internationales
+  - Histoire
 category: Vidéo
 description: Marchand de Bourges devenu argentier de Charles VII, Jacques Cœur revient sur le commerce avec l’Orient, le financement de l’État et sa chute brutale.
 draft: false

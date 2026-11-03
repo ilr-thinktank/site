@@ -7,6 +7,8 @@ rubrique: Doléances
 themes:
   - Société
   - Démocratie
+  - Territoires
+  - Services publics
 category: Essai court
 description: À Perpète-les-Oies, les habitants ont parlé d’accès aux soins, de solitude des aînés et de leur sentiment de ne pas être entendus.
 draft: false

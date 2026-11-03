@@ -34,8 +34,9 @@ if (contactForm) {
 
 // Client-side search/filtering: no WordPress AJAX or server required.
 const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr');
-// The Productions page adds category toggles, theme chips, an author filter and a theme × category
-// matrix; all combine, and its state is mirrored in the URL (?q=&categories=&theme=&auteur=) for sharing.
+// The Productions page adds category toggles, cumulative theme chips, an author filter and a theme × category
+// matrix; all combine, counts follow the current selection, and the state is mirrored in the URL
+// (?q=&categories=&theme=&theme=&auteur=) for sharing.
 for (const list of document.querySelectorAll('[data-content-list]')) {
   const query = list.querySelector('[data-content-query]');
   const category = list.querySelector('[data-content-category]');
@@ -43,39 +44,78 @@ for (const list of document.querySelectorAll('[data-content-list]')) {
   const themeChips = [...list.querySelectorAll('[data-theme-filter]')];
   const author = list.querySelector('[data-author-filter]');
   const cells = [...list.querySelectorAll('[data-matrix-cell]')];
+  const rows = [...list.querySelectorAll('[data-matrix-row]')];
   const status = list.querySelector('[data-content-status]');
   const reset = list.querySelector('[data-filter-reset]');
   const syncUrl = list.hasAttribute('data-sync-url');
   if (!query) continue;
-  const cards = [...list.querySelectorAll('[data-content-card]')];
-  let theme = '';
+  const cards = [...list.querySelectorAll('[data-content-card]')].map(element => ({
+    element,
+    rubrique: element.dataset.rubrique,
+    author: element.dataset.author,
+    category: element.dataset.category,
+    themes: (element.dataset.themes ?? '').split('|').filter(Boolean),
+    text: normalize(`${element.textContent} ${element.dataset.search ?? ''}`),
+  }));
+  const themes = new Set();
   const pressed = el => el.getAttribute('aria-pressed') !== 'false';
   const showOnly = names => { for (const t of toggles) t.setAttribute('aria-pressed', String(names.includes(t.dataset.rubriqueToggle))); };
+  const plural = n => `${n} production${n > 1 ? 's' : ''}`;
   const update = () => {
     const terms = normalize(query.value).trim().split(/\s+/).filter(Boolean);
     const shown = toggles.filter(pressed).map(t => t.dataset.rubriqueToggle);
     const hiddenRubriques = new Set(toggles.filter(t => !pressed(t)).map(t => t.dataset.rubriqueToggle));
+    // A facet's count leaves out its own filter, so it shows what choosing it would give.
+    const passes = (card, { skip, addTheme } = {}) => terms.every(term => card.text.includes(term))
+      && !(category && category.value && card.category !== category.value)
+      && (skip === 'format' || !hiddenRubriques.has(card.rubrique))
+      && (skip === 'author' || !author?.value || card.author === author.value)
+      && [...themes, ...(addTheme ? [addTheme] : [])].every(theme => card.themes.includes(theme));
+    const count = (options, keep = () => true) => cards.filter(card => keep(card) && passes(card, options)).length;
     let visible = 0;
     for (const card of cards) {
-      const text = normalize(`${card.textContent} ${card.dataset.search ?? ''}`);
-      card.hidden = !terms.every(term => text.includes(term))
-        || Boolean(category && category.value && card.dataset.category !== category.value)
-        || hiddenRubriques.has(card.dataset.rubrique)
-        || Boolean(theme && !(card.dataset.themes ?? '').split('|').includes(theme))
-        || Boolean(author && author.value && card.dataset.author !== author.value);
-      if (!card.hidden) visible++;
+      card.element.hidden = !passes(card);
+      if (!card.element.hidden) visible++;
     }
-    for (const chip of themeChips) chip.setAttribute('aria-pressed', String(chip.dataset.themeFilter === theme));
-    for (const cell of cells) cell.classList.toggle('is-active', cell.dataset.theme === theme && shown.length === 1 && shown[0] === cell.dataset.rubrique);
+    for (const chip of themeChips) {
+      const theme = chip.dataset.themeFilter;
+      const active = theme ? themes.has(theme) : themes.size === 0;
+      chip.setAttribute('aria-pressed', String(active));
+      if (!theme) continue;
+      const n = count({ addTheme: theme });
+      chip.querySelector('small').textContent = n;
+      chip.disabled = !active && n === 0;
+    }
+    for (const toggle of toggles) {
+      toggle.querySelector('small').textContent = count({ skip: 'format' }, card => card.rubrique === toggle.dataset.rubriqueToggle);
+    }
+    for (const option of author ? author.options : []) {
+      if (!option.value) continue;
+      const n = count({ skip: 'author' }, card => card.author === option.value);
+      option.textContent = `${option.value} (${n})`;
+      option.disabled = n === 0 && !option.selected;
+    }
+    const counts = cells.map(cell => count({ skip: 'format', addTheme: cell.dataset.theme }, card => card.rubrique === cell.dataset.rubrique));
+    const max = Math.max(1, ...counts);
+    cells.forEach((cell, i) => {
+      const n = counts[i];
+      cell.hidden = n === 0;
+      cell.nextElementSibling.hidden = n > 0;
+      cell.querySelector('span').textContent = n;
+      cell.style.setProperty('--s', (0.35 + 0.65 * n / max).toFixed(2));
+      cell.setAttribute('aria-label', `${cell.dataset.theme} × ${cell.dataset.rubrique} : ${plural(n)}`);
+      cell.classList.toggle('is-active', themes.has(cell.dataset.theme) && shown.length === 1 && shown[0] === cell.dataset.rubrique);
+    });
+    for (const row of rows) row.classList.toggle('is-selected', themes.has(row.dataset.matrixRow));
     list.querySelector('[data-content-empty]').hidden = visible > 0;
-    const filtering = terms.length > 0 || hiddenRubriques.size > 0 || Boolean(theme) || Boolean(author?.value);
-    if (status) status.textContent = `${visible} production${visible > 1 ? 's' : ''}${filtering ? ` sur ${cards.length}` : ''}`;
+    const filtering = terms.length > 0 || hiddenRubriques.size > 0 || themes.size > 0 || Boolean(author?.value);
+    if (status) status.textContent = `${plural(visible)}${filtering ? ` sur ${cards.length}` : ''}`;
     if (reset) reset.hidden = !filtering;
     if (syncUrl) {
       const params = new URLSearchParams();
       if (query.value.trim()) params.set('q', query.value.trim());
       if (hiddenRubriques.size) params.set('categories', shown.join(','));
-      if (theme) params.set('theme', theme);
+      for (const theme of themes) params.append('theme', theme);
       if (author?.value) params.set('auteur', author.value);
       history.replaceState(null, '', `${location.pathname}${params.size ? `?${params}` : ''}${location.hash}`);
     }
@@ -83,7 +123,7 @@ for (const list of document.querySelectorAll('[data-content-list]')) {
   if (syncUrl) {
     const params = new URLSearchParams(location.search);
     query.value = params.get('q') ?? '';
-    if (themeChips.some(chip => chip.dataset.themeFilter === params.get('theme'))) theme = params.get('theme');
+    for (const theme of params.getAll('theme')) if (themeChips.some(chip => chip.dataset.themeFilter === theme)) themes.add(theme);
     if (author && [...author.options].some(o => o.value === params.get('auteur'))) author.value = params.get('auteur');
     if (params.get('categories')) showOnly(params.get('categories').split(','));
   }
@@ -98,21 +138,27 @@ for (const list of document.querySelectorAll('[data-content-list]')) {
   }
   for (const chip of themeChips) {
     chip.addEventListener('click', () => {
-      theme = theme === chip.dataset.themeFilter ? '' : chip.dataset.themeFilter;
+      const theme = chip.dataset.themeFilter;
+      if (!theme) themes.clear();
+      else if (!themes.delete(theme)) themes.add(theme);
       update();
     });
   }
   for (const cell of cells) {
     cell.addEventListener('click', () => {
-      theme = cell.dataset.theme;
-      showOnly([cell.dataset.rubrique]);
+      if (cell.classList.contains('is-active')) {
+        themes.delete(cell.dataset.theme);
+        showOnly(toggles.map(t => t.dataset.rubriqueToggle));
+      } else {
+        themes.add(cell.dataset.theme);
+        showOnly([cell.dataset.rubrique]);
+      }
       update();
-      list.querySelector('.ilr-content-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
   reset?.addEventListener('click', () => {
     query.value = '';
-    theme = '';
+    themes.clear();
     if (author) author.value = '';
     showOnly(toggles.map(t => t.dataset.rubriqueToggle));
     update();

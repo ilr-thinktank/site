@@ -17,6 +17,9 @@
 .ilr-content-list .ilr-chip:hover{background:#eef4f6;color:#0b2c19;border-color:#2b657b}
 .ilr-content-list .ilr-chip[aria-pressed="true"]{background:#0b2c19;border-color:#0b2c19;color:#fff}
 .ilr-content-list .ilr-chip[aria-pressed="true"] small{color:#cfe0d6}
+.ilr-content-list .ilr-chip:disabled{opacity:.4;cursor:not-allowed;background:#fff;color:#0b2c19;border-color:#c9d6dc}
+.ilr-matrix tbody tr.is-selected{background:#e6eef1}
+.ilr-matrix tbody tr.is-selected th{color:#2b657b}
 .ilr-chip:focus-visible,.ilr-bubble:focus-visible,.ilr-reset:focus-visible,.ilr-time:focus-visible{outline:2px solid #2b657b;outline-offset:2px}
 .ilr-filter-row{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
 .ilr-filter-row select{min-width:220px}

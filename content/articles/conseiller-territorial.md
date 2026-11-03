@@ -7,6 +7,8 @@ rubrique: Bancs d’essai
 themes:
   - Territoires
   - Institutions
+  - Élections
+  - Droit
 category: Analyse de fond
 description: "Créé en 2010 pour siéger à la fois au département et à la région, le conseiller territorial a été supprimé avant d’avoir jamais été élu. L’idée revient régulièrement : que vaudrait-elle aujourd’hui ?"
 draft: false

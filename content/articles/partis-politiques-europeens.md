@@ -8,6 +8,9 @@ themes:
   - Europe
   - Institutions
   - Partis politiques
+  - Élections
+  - Démocratie
+  - Droit
 category: Tribune
 description: Les partis français sont membres de partis européens financés par l’Union, qui pèsent sur la composition des institutions. Presque aucun électeur ne le sait.
 draft: false

@@ -8,6 +8,8 @@ themes:
   - Souveraineté
   - Institutions
   - Société
+  - Histoire
+  - Droit
 category: Essai court
 description: En 1539, François Ier impose le français dans les actes de justice et fait tenir des registres de baptêmes. Retour sur une ordonnance qui a fait de la langue et de l’état civil des instruments de l’État.
 draft: false

@@ -7,6 +7,8 @@ rubrique: Bancs d’essai
 themes:
   - Élections
   - Institutions
+  - Démocratie
+  - Droit
 category: Analyse de fond
 description: L’idée revient à chaque scrutin marqué par une forte abstention. Ce que montrent les pays qui l’appliquent, et ce qu’elle changerait en France.
 draft: false

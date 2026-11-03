@@ -7,6 +7,8 @@ rubrique: Angles morts
 themes:
   - Élections
   - Démocratie
+  - Société
+  - Institutions
 category: Tribune
 description: Inscrits sur les listes électorales d’une commune où ils ne vivent plus, plusieurs millions de Français votent peu ou pas du tout. Un phénomène massif, presque absent du débat sur l’abstention.
 draft: false

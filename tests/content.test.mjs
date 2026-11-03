@@ -78,7 +78,7 @@ test('Productions filters link themes, authors and categories, with a matrix', (
  assert.deepEqual($('[data-theme-filter]').map((_, el) => $(el).attr('data-theme-filter')).get(), ['', 'Europe', 'Économie', 'Souveraineté']);
  assert.deepEqual($('[data-author-filter] option').map((_, el) => $(el).attr('value')).get(), ['', 'Alice', 'Bob']);
  assert.equal($('[data-matrix-cell][data-theme="Europe"][data-rubrique="Audiences"] span').text(), '2');
- assert.equal($('[data-matrix-cell][data-theme="Europe"][data-rubrique="Angles morts"]').length, 0);
+ assert.ok($('[data-matrix-cell][data-theme="Europe"][data-rubrique="Angles morts"]').is('[hidden]'));
  const c = $('[data-content-card]').eq(2);
  assert.equal(c.attr('data-author'), 'Alice');
  assert.equal(c.attr('data-themes'), 'Économie');

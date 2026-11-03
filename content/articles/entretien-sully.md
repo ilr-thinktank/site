@@ -7,6 +7,8 @@ rubrique: Audiences
 themes:
   - Europe
   - Souveraineté
+  - Relations internationales
+  - Histoire
 category: Vidéo
 description: Ministre et ami d’Henri IV, Sully revient sur le « Grand Dessein », un projet d’association des États européens qui ne sacrifiait pas leur indépendance.
 draft: false

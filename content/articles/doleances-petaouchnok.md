@@ -8,6 +8,7 @@ themes:
   - Territoires
   - Démocratie
   - Société
+  - Services publics
 category: Essai court
 description: Une soirée d’échanges avec les habitants de Pétaouchnok sur les services publics, les transports et la vie de la commune.
 draft: false

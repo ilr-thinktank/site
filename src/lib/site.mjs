@@ -85,23 +85,24 @@ const countBy = (items, key) => {
   return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'fr'));
 };
 // Productions page: search, category toggles, theme chips, author filter and a Thèmes × Catégories bubble matrix.
-// All filters combine; site.js keeps them in the URL so a filtered view can be shared.
+// All filters combine and themes add up (a production must have every chosen theme); site.js updates the
+// counts as filters change and keeps them in the URL so a filtered view can be shared.
 export function productionsListing(articles, { label = 'Rechercher une production', id = 'productions' } = {}) {
   const themes = countBy(articles, e => themesOf(e.data));
   const authors = countBy(articles, e => e.data.author).sort((a, b) => a[0].localeCompare(b[0], 'fr'));
   const cell = (theme, name) => articles.filter(e => e.data.rubrique === name && themesOf(e.data).includes(theme)).length;
   const max = Math.max(1, ...themes.flatMap(([theme]) => rubriques.map(([name]) => cell(theme, name))));
   const matrix = themes.length ? `<details class="ilr-explorer" open><summary>Explorer : thèmes × catégories</summary>
-    <table class="ilr-matrix"><caption>Nombre de productions par thème et par catégorie. Cliquez sur une bulle pour filtrer.</caption>
+    <table class="ilr-matrix"><caption>Productions par thème et par catégorie. Chaque clic sur une bulle ajoute ce thème et ne garde que cette catégorie : les thèmes se cumulent pour préciser la recherche.</caption>
     <thead><tr><th scope="col">Thème</th>${rubriques.map(([name]) => `<th scope="col" title="${escape(name)}">${icon(name)}<span class="ilr-sr">${escape(name)}</span></th>`).join('')}</tr></thead>
-    <tbody>${themes.map(([theme]) => `<tr><th scope="row">${escape(theme)}</th>${rubriques.map(([name]) => {
+    <tbody>${themes.map(([theme]) => `<tr data-matrix-row="${escape(theme)}"><th scope="row">${escape(theme)}</th>${rubriques.map(([name]) => {
       const n = cell(theme, name);
-      return `<td>${n ? `<button type="button" class="ilr-bubble" data-matrix-cell data-theme="${escape(theme)}" data-rubrique="${escape(name)}" style="--s:${(0.35 + 0.65 * n / max).toFixed(2)}" aria-label="${escape(theme)} × ${escape(name)} : ${n} production${n > 1 ? 's' : ''}"><span>${n}</span></button>` : '<span class="ilr-bubble-empty" aria-hidden="true"></span>'}</td>`;
+      return `<td><button type="button" class="ilr-bubble" data-matrix-cell data-theme="${escape(theme)}" data-rubrique="${escape(name)}" style="--s:${(0.35 + 0.65 * n / max).toFixed(2)}" aria-label="${escape(theme)} × ${escape(name)} : ${n} production${n > 1 ? 's' : ''}"${n ? '' : ' hidden'}><span>${n}</span></button><span class="ilr-bubble-empty" aria-hidden="true"${n ? ' hidden' : ''}></span></td>`;
     }).join('')}</tr>`).join('')}</tbody></table></details>` : '';
   return `<div class="ilr-content-list" data-content-list data-sync-url>
     <div class="ilr-search"><label for="${id}-query">${label}</label><input id="${id}-query" type="search" data-content-query placeholder="${label}…">
     <div class="ilr-toggles" role="group" aria-label="Afficher ou masquer les catégories">${rubriques.map(([name]) => `<button type="button" class="ilr-toggle" data-rubrique-toggle="${escape(name)}" aria-pressed="true" title="Afficher ou masquer : ${escape(name)}">${icon(name)}<span>${escape(name)}</span><small>${articles.filter(e => e.data.rubrique === name).length}</small></button>`).join('')}</div>
-    ${themes.length ? `<div class="ilr-chips" role="group" aria-label="Filtrer par thème"><button type="button" class="ilr-chip" data-theme-filter="" aria-pressed="true">Tous les thèmes</button>${themes.map(([theme, n]) => `<button type="button" class="ilr-chip" data-theme-filter="${escape(theme)}" aria-pressed="false">${escape(theme)} <small>${n}</small></button>`).join('')}</div>` : ''}
+    ${themes.length ? `<div class="ilr-chips" role="group" aria-label="Filtrer par thème (plusieurs thèmes possibles)"><button type="button" class="ilr-chip" data-theme-filter="" aria-pressed="true">Tous les thèmes</button>${themes.map(([theme, n]) => `<button type="button" class="ilr-chip" data-theme-filter="${escape(theme)}" aria-pressed="false">${escape(theme)} <small>${n}</small></button>`).join('')}</div>` : ''}
     <div class="ilr-filter-row"><label for="${id}-author">Auteur</label><select id="${id}-author" data-author-filter><option value="">Tous les auteurs</option>${authors.map(([a, n]) => `<option value="${escape(a)}">${escape(a)} (${n})</option>`).join('')}</select>
     <p class="ilr-status" data-content-status aria-live="polite">${articles.length} production${articles.length > 1 ? 's' : ''}</p><button type="button" class="ilr-reset" data-filter-reset hidden>Réinitialiser les filtres</button></div></div>
     ${matrix}

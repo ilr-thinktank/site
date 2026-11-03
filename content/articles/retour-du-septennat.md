@@ -8,6 +8,7 @@ themes:
   - Institutions
   - Élections
   - Partis politiques
+  - Démocratie
 category: Analyse de fond
 description: Dans sa « Lettre aux Français » de juillet 2026, Bernard Cazeneuve propose de revenir au mandat présidentiel de sept ans. Ce que la mesure promet, ce qu’elle changerait et les questions qu’elle laisse ouvertes.
 draft: false

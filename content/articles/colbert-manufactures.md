@@ -7,6 +7,8 @@ rubrique: Raisons d’État
 themes:
   - Économie
   - Souveraineté
+  - Industrie
+  - Histoire
 category: Essai court
 description: Sous Louis XIV, Jean-Baptiste Colbert crée des manufactures royales pour que la France cesse d’importer ce qu’elle peut produire. Une politique industrielle avant l’heure, dont les débats d’aujourd’hui retrouvent les termes.
 draft: false

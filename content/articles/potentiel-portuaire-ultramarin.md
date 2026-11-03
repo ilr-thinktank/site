@@ -8,6 +8,8 @@ themes:
   - Territoires
   - Économie
   - Relations internationales
+  - Outre-mer
+  - Souveraineté
 category: Tribune
 description: La France possède l’un des plus vastes domaines maritimes du monde, presque entièrement grâce à ses outre-mer. Ses ports ultramarins restent pourtant absents du débat sur sa puissance économique.
 draft: false

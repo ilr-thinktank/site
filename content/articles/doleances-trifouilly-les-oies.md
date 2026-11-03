@@ -7,6 +7,8 @@ rubrique: Doléances
 themes:
   - Territoires
   - Économie
+  - Société
+  - Services publics
 category: Essai court
 description: Commerçants, agriculteurs et artisans de Trifouilly-les-Oies ont dit ce qui pèse sur l’activité économique de la commune.
 draft: false
